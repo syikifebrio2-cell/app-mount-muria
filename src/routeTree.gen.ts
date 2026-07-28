@@ -9,8 +9,68 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TiketRouteImport } from './routes/tiket'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as RegistrasiRouteImport } from './routes/registrasi'
+import { Route as ProfilRouteImport } from './routes/profil'
+import { Route as PesanRouteImport } from './routes/pesan'
+import { Route as PembayaranRouteImport } from './routes/pembayaran'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as MasukRouteImport } from './routes/masuk'
+import { Route as JalurRouteImport } from './routes/jalur'
+import { Route as BerandaRouteImport } from './routes/beranda'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TiketRoute = TiketRouteImport.update({
+  id: '/tiket',
+  path: '/tiket',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegistrasiRoute = RegistrasiRouteImport.update({
+  id: '/registrasi',
+  path: '/registrasi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfilRoute = ProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PesanRoute = PesanRouteImport.update({
+  id: '/pesan',
+  path: '/pesan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PembayaranRoute = PembayaranRouteImport.update({
+  id: '/pembayaran',
+  path: '/pembayaran',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MasukRoute = MasukRouteImport.update({
+  id: '/masuk',
+  path: '/masuk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JalurRoute = JalurRouteImport.update({
+  id: '/jalur',
+  path: '/jalur',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BerandaRoute = BerandaRouteImport.update({
+  id: '/beranda',
+  path: '/beranda',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +79,172 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/beranda': typeof BerandaRoute
+  '/jalur': typeof JalurRoute
+  '/masuk': typeof MasukRoute
+  '/onboarding': typeof OnboardingRoute
+  '/pembayaran': typeof PembayaranRoute
+  '/pesan': typeof PesanRoute
+  '/profil': typeof ProfilRoute
+  '/registrasi': typeof RegistrasiRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/tiket': typeof TiketRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/beranda': typeof BerandaRoute
+  '/jalur': typeof JalurRoute
+  '/masuk': typeof MasukRoute
+  '/onboarding': typeof OnboardingRoute
+  '/pembayaran': typeof PembayaranRoute
+  '/pesan': typeof PesanRoute
+  '/profil': typeof ProfilRoute
+  '/registrasi': typeof RegistrasiRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/tiket': typeof TiketRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/beranda': typeof BerandaRoute
+  '/jalur': typeof JalurRoute
+  '/masuk': typeof MasukRoute
+  '/onboarding': typeof OnboardingRoute
+  '/pembayaran': typeof PembayaranRoute
+  '/pesan': typeof PesanRoute
+  '/profil': typeof ProfilRoute
+  '/registrasi': typeof RegistrasiRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/tiket': typeof TiketRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/beranda'
+    | '/jalur'
+    | '/masuk'
+    | '/onboarding'
+    | '/pembayaran'
+    | '/pesan'
+    | '/profil'
+    | '/registrasi'
+    | '/sitemap.xml'
+    | '/tiket'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/beranda'
+    | '/jalur'
+    | '/masuk'
+    | '/onboarding'
+    | '/pembayaran'
+    | '/pesan'
+    | '/profil'
+    | '/registrasi'
+    | '/sitemap.xml'
+    | '/tiket'
+  id:
+    | '__root__'
+    | '/'
+    | '/beranda'
+    | '/jalur'
+    | '/masuk'
+    | '/onboarding'
+    | '/pembayaran'
+    | '/pesan'
+    | '/profil'
+    | '/registrasi'
+    | '/sitemap.xml'
+    | '/tiket'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BerandaRoute: typeof BerandaRoute
+  JalurRoute: typeof JalurRoute
+  MasukRoute: typeof MasukRoute
+  OnboardingRoute: typeof OnboardingRoute
+  PembayaranRoute: typeof PembayaranRoute
+  PesanRoute: typeof PesanRoute
+  ProfilRoute: typeof ProfilRoute
+  RegistrasiRoute: typeof RegistrasiRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TiketRoute: typeof TiketRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tiket': {
+      id: '/tiket'
+      path: '/tiket'
+      fullPath: '/tiket'
+      preLoaderRoute: typeof TiketRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/registrasi': {
+      id: '/registrasi'
+      path: '/registrasi'
+      fullPath: '/registrasi'
+      preLoaderRoute: typeof RegistrasiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profil': {
+      id: '/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof ProfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pesan': {
+      id: '/pesan'
+      path: '/pesan'
+      fullPath: '/pesan'
+      preLoaderRoute: typeof PesanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pembayaran': {
+      id: '/pembayaran'
+      path: '/pembayaran'
+      fullPath: '/pembayaran'
+      preLoaderRoute: typeof PembayaranRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/masuk': {
+      id: '/masuk'
+      path: '/masuk'
+      fullPath: '/masuk'
+      preLoaderRoute: typeof MasukRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jalur': {
+      id: '/jalur'
+      path: '/jalur'
+      fullPath: '/jalur'
+      preLoaderRoute: typeof JalurRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/beranda': {
+      id: '/beranda'
+      path: '/beranda'
+      fullPath: '/beranda'
+      preLoaderRoute: typeof BerandaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,17 +257,17 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BerandaRoute: BerandaRoute,
+  JalurRoute: JalurRoute,
+  MasukRoute: MasukRoute,
+  OnboardingRoute: OnboardingRoute,
+  PembayaranRoute: PembayaranRoute,
+  PesanRoute: PesanRoute,
+  ProfilRoute: ProfilRoute,
+  RegistrasiRoute: RegistrasiRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TiketRoute: TiketRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
