@@ -9,10 +9,23 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RegistrasiRouteImport } from './routes/registrasi'
+import { Route as PesanRouteImport } from './routes/pesan'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MasukRouteImport } from './routes/masuk'
+import { Route as BerandaRouteImport } from './routes/beranda'
 import { Route as IndexRouteImport } from './routes/index'
 
+const RegistrasiRoute = RegistrasiRouteImport.update({
+  id: '/registrasi',
+  path: '/registrasi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PesanRoute = PesanRouteImport.update({
+  id: '/pesan',
+  path: '/pesan',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -23,6 +36,11 @@ const MasukRoute = MasukRouteImport.update({
   path: '/masuk',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BerandaRoute = BerandaRouteImport.update({
+  id: '/beranda',
+  path: '/beranda',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,36 +49,75 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/beranda': typeof BerandaRoute
   '/masuk': typeof MasukRoute
   '/onboarding': typeof OnboardingRoute
+  '/pesan': typeof PesanRoute
+  '/registrasi': typeof RegistrasiRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/beranda': typeof BerandaRoute
   '/masuk': typeof MasukRoute
   '/onboarding': typeof OnboardingRoute
+  '/pesan': typeof PesanRoute
+  '/registrasi': typeof RegistrasiRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/beranda': typeof BerandaRoute
   '/masuk': typeof MasukRoute
   '/onboarding': typeof OnboardingRoute
+  '/pesan': typeof PesanRoute
+  '/registrasi': typeof RegistrasiRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/masuk' | '/onboarding'
+  fullPaths:
+    | '/'
+    | '/beranda'
+    | '/masuk'
+    | '/onboarding'
+    | '/pesan'
+    | '/registrasi'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/masuk' | '/onboarding'
-  id: '__root__' | '/' | '/masuk' | '/onboarding'
+  to: '/' | '/beranda' | '/masuk' | '/onboarding' | '/pesan' | '/registrasi'
+  id:
+    | '__root__'
+    | '/'
+    | '/beranda'
+    | '/masuk'
+    | '/onboarding'
+    | '/pesan'
+    | '/registrasi'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BerandaRoute: typeof BerandaRoute
   MasukRoute: typeof MasukRoute
   OnboardingRoute: typeof OnboardingRoute
+  PesanRoute: typeof PesanRoute
+  RegistrasiRoute: typeof RegistrasiRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/registrasi': {
+      id: '/registrasi'
+      path: '/registrasi'
+      fullPath: '/registrasi'
+      preLoaderRoute: typeof RegistrasiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pesan': {
+      id: '/pesan'
+      path: '/pesan'
+      fullPath: '/pesan'
+      preLoaderRoute: typeof PesanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
@@ -75,6 +132,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MasukRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/beranda': {
+      id: '/beranda'
+      path: '/beranda'
+      fullPath: '/beranda'
+      preLoaderRoute: typeof BerandaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,8 +151,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BerandaRoute: BerandaRoute,
   MasukRoute: MasukRoute,
   OnboardingRoute: OnboardingRoute,
+  PesanRoute: PesanRoute,
+  RegistrasiRoute: RegistrasiRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
