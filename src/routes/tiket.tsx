@@ -175,7 +175,7 @@ function QrPlaceholder() {
     return on;
   });
   return (
-    <div className="grid h-36 w-36 grid-cols-13 gap-px" aria-label="QR code e-tiket">
+    <div className="grid h-36 w-36 grid-cols-[repeat(13,minmax(0,1fr))] gap-px" aria-label="QR code e-tiket">
       {cells.map((on, i) => (
         <span
           key={i}
