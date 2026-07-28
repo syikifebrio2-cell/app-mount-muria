@@ -1,0 +1,169 @@
+import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Phone, Mail, ShieldCheck } from "lucide-react";
+import { PhoneShell } from "@/components/PhoneShell";
+import logo from "@/assets/logo-muria.png";
+
+export const Route = createFileRoute("/masuk")({
+  head: () => ({
+    meta: [
+      { title: "Masuk atau Daftar — Muria Trail" },
+      {
+        name: "description",
+        content:
+          "Masuk ke Muria Trail dengan nomor HP, email, atau akun Google untuk memesan tiket pendakian Gunung Muria.",
+      },
+      { property: "og:title", content: "Masuk atau Daftar — Muria Trail" },
+      {
+        property: "og:description",
+        content: "Masuk dengan nomor HP, email, atau Google untuk mulai mendaki Gunung Muria.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: Masuk,
+});
+
+function Masuk() {
+  const [mode, setMode] = useState<"masuk" | "daftar">("masuk");
+  const [via, setVia] = useState<"hp" | "email">("hp");
+
+  return (
+    <PhoneShell>
+      <div className="flex flex-1 flex-col px-6 pb-8 pt-6">
+        <img src={logo} alt="Logo Muria Trail" width={512} height={512} loading="lazy" className="h-12 w-12" />
+        <h1 className="mt-4 text-2xl font-extrabold tracking-tight">
+          {mode === "masuk" ? "Selamat datang kembali" : "Buat akun pendaki"}
+        </h1>
+        <p className="mt-1.5 text-sm text-muted-foreground">
+          Satu akun untuk tiket, registrasi, dan riwayat pendakianmu.
+        </p>
+
+        <div className="mt-6 grid grid-cols-2 gap-1 rounded-2xl bg-secondary p-1">
+          {(["masuk", "daftar"] as const).map((m) => (
+            <button
+              key={m}
+              onClick={() => setMode(m)}
+              className={`rounded-xl py-2 text-xs font-bold capitalize transition-colors ${
+                mode === m ? "bg-card text-primary shadow-card" : "text-secondary-foreground/70"
+              }`}
+            >
+              {m}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-5 flex gap-2">
+          <TabPill active={via === "hp"} onClick={() => setVia("hp")} icon={Phone} label="Nomor HP" />
+          <TabPill active={via === "email"} onClick={() => setVia("email")} icon={Mail} label="Email" />
+        </div>
+
+        <div className="mt-4 space-y-3">
+          {mode === "daftar" ? <Field label="Nama lengkap" placeholder="Nama sesuai KTP" /> : null}
+          {via === "hp" ? (
+            <Field label="Nomor HP" placeholder="+62 8•• •••• ••••" prefix="ID" />
+          ) : (
+            <Field label="Email" placeholder="nama@email.com" />
+          )}
+          <Field label="Kata sandi" placeholder="••••••••" />
+        </div>
+
+        {mode === "masuk" ? (
+          <button className="mt-3 self-end text-xs font-semibold text-primary">Lupa sandi?</button>
+        ) : null}
+
+        <Link
+          to="/beranda"
+          className="mt-5 flex items-center justify-center rounded-2xl bg-primary py-3.5 text-sm font-bold text-primary-foreground shadow-card"
+        >
+          {mode === "masuk" ? "Masuk" : "Daftar sekarang"}
+        </Link>
+
+        <div className="my-5 flex items-center gap-3 text-[11px] text-muted-foreground">
+          <span className="h-px flex-1 bg-border" /> atau <span className="h-px flex-1 bg-border" />
+        </div>
+
+        <Link
+          to="/beranda"
+          className="flex items-center justify-center gap-2.5 rounded-2xl border border-border bg-card py-3.5 text-sm font-semibold shadow-card"
+        >
+          <GoogleMark />
+          Lanjutkan dengan Google
+        </Link>
+
+        <div className="mt-auto flex items-start gap-2 pt-6 text-[11px] leading-relaxed text-muted-foreground">
+          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={1.75} />
+          <p>
+            Data pendaki dienkripsi dan hanya dipakai untuk keperluan keselamatan serta pendataan
+            resmi pengelola kawasan.
+          </p>
+        </div>
+      </div>
+    </PhoneShell>
+  );
+}
+
+function TabPill({
+  active,
+  onClick,
+  icon: Icon,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: typeof Phone;
+  label: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex flex-1 items-center justify-center gap-2 rounded-2xl border py-2.5 text-xs font-semibold transition-colors ${
+        active
+          ? "border-primary bg-primary/8 text-primary"
+          : "border-border bg-card text-muted-foreground"
+      }`}
+    >
+      <Icon className="h-4 w-4" strokeWidth={1.75} />
+      {label}
+    </button>
+  );
+}
+
+function Field({
+  label,
+  placeholder,
+  prefix,
+}: {
+  label: string;
+  placeholder: string;
+  prefix?: string;
+}) {
+  return (
+    <label className="block">
+      <span className="text-[11px] font-semibold text-muted-foreground">{label}</span>
+      <div className="mt-1.5 flex items-center gap-2 rounded-2xl border border-input bg-card px-4 py-3 shadow-card focus-within:border-ring">
+        {prefix ? (
+          <span className="shrink-0 border-r border-border pr-2 text-xs font-bold text-muted-foreground">
+            {prefix}
+          </span>
+        ) : null}
+        <input
+          placeholder={placeholder}
+          className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
+        />
+      </div>
+    </label>
+  );
+}
+
+function GoogleMark() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true">
+      <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.6 30.2.5 24 .5 14.6.5 6.5 5.9 2.6 13.7l7.8 6.1C12.3 13.9 17.6 9.5 24 9.5Z" />
+      <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7.1-10 7.1-17.5Z" />
+      <path fill="#FBBC05" d="M10.4 28.2a14.6 14.6 0 0 1 0-8.4l-7.8-6.1a23.6 23.6 0 0 0 0 20.6l7.8-6.1Z" />
+      <path fill="#34A853" d="M24 47.5c6.2 0 11.5-2 15.4-5.6l-7.5-5.8c-2.1 1.4-4.8 2.2-7.9 2.2-6.4 0-11.7-4.3-13.6-10.1l-7.8 6.1C6.5 42.1 14.6 47.5 24 47.5Z" />
+    </svg>
+  );
+}
