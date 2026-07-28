@@ -10,7 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TiketRouteImport } from './routes/tiket'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RegistrasiRouteImport } from './routes/registrasi'
+import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as PesanRouteImport } from './routes/pesan'
 import { Route as PembayaranRouteImport } from './routes/pembayaran'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
@@ -24,9 +26,19 @@ const TiketRoute = TiketRouteImport.update({
   path: '/tiket',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RegistrasiRoute = RegistrasiRouteImport.update({
   id: '/registrasi',
   path: '/registrasi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfilRoute = ProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PesanRoute = PesanRouteImport.update({
@@ -73,7 +85,9 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRoute
   '/pembayaran': typeof PembayaranRoute
   '/pesan': typeof PesanRoute
+  '/profil': typeof ProfilRoute
   '/registrasi': typeof RegistrasiRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tiket': typeof TiketRoute
 }
 export interface FileRoutesByTo {
@@ -84,7 +98,9 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/pembayaran': typeof PembayaranRoute
   '/pesan': typeof PesanRoute
+  '/profil': typeof ProfilRoute
   '/registrasi': typeof RegistrasiRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tiket': typeof TiketRoute
 }
 export interface FileRoutesById {
@@ -96,7 +112,9 @@ export interface FileRoutesById {
   '/onboarding': typeof OnboardingRoute
   '/pembayaran': typeof PembayaranRoute
   '/pesan': typeof PesanRoute
+  '/profil': typeof ProfilRoute
   '/registrasi': typeof RegistrasiRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tiket': typeof TiketRoute
 }
 export interface FileRouteTypes {
@@ -109,7 +127,9 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/pembayaran'
     | '/pesan'
+    | '/profil'
     | '/registrasi'
+    | '/sitemap.xml'
     | '/tiket'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -120,7 +140,9 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/pembayaran'
     | '/pesan'
+    | '/profil'
     | '/registrasi'
+    | '/sitemap.xml'
     | '/tiket'
   id:
     | '__root__'
@@ -131,7 +153,9 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/pembayaran'
     | '/pesan'
+    | '/profil'
     | '/registrasi'
+    | '/sitemap.xml'
     | '/tiket'
   fileRoutesById: FileRoutesById
 }
@@ -143,7 +167,9 @@ export interface RootRouteChildren {
   OnboardingRoute: typeof OnboardingRoute
   PembayaranRoute: typeof PembayaranRoute
   PesanRoute: typeof PesanRoute
+  ProfilRoute: typeof ProfilRoute
   RegistrasiRoute: typeof RegistrasiRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TiketRoute: typeof TiketRoute
 }
 
@@ -156,11 +182,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TiketRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/registrasi': {
       id: '/registrasi'
       path: '/registrasi'
       fullPath: '/registrasi'
       preLoaderRoute: typeof RegistrasiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profil': {
+      id: '/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof ProfilRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pesan': {
@@ -223,7 +263,9 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRoute: OnboardingRoute,
   PembayaranRoute: PembayaranRoute,
   PesanRoute: PesanRoute,
+  ProfilRoute: ProfilRoute,
   RegistrasiRoute: RegistrasiRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TiketRoute: TiketRoute,
 }
 export const routeTree = rootRouteImport
