@@ -13,11 +13,11 @@ export const Route = createFileRoute("/")({
         content:
           "Pesan tiket pendakian Gunung Muria, Jepara: registrasi pendaki, kuota harian, info jalur Colo & Rahtawu, cuaca real-time, dan e-tiket QR offline.",
       },
-      { property: "og:title", content: "Muria Trail — Pendakian Gunung Muria" },
+      { property: "og:title", content: "Muria Trail — Tiket & Registrasi Pendakian Gunung Muria" },
       {
         property: "og:description",
         content:
-          "Aplikasi pemesanan tiket & registrasi pendakian Gunung Muria. Kuota harian, cuaca, jalur, dan e-tiket digital.",
+          "Pesan tiket pendakian Gunung Muria, Jepara: registrasi pendaki, kuota harian, info jalur Colo & Rahtawu, cuaca real-time, dan e-tiket QR offline.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
