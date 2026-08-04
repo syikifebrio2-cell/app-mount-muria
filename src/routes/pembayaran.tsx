@@ -6,16 +6,16 @@ import { PhoneShell, ScreenHeader } from "@/components/PhoneShell";
 export const Route = createFileRoute("/pembayaran")({
   head: () => ({
     meta: [
-      { title: "Ringkasan & Pembayaran Tiket — Muria Trail" },
+      { title: "Ringkasan Biaya Retribusi & Simaksi — Muria Trail" },
       {
         name: "description",
         content:
-          "Rincian tiket pendakian, asuransi, dan biaya parkir Gunung Muria. Bayar lewat e-wallet, transfer bank, atau QRIS.",
+          "Rincian biaya pendakian Rahtawu per pos: retribusi desa wisata, simaksi jalur, parkir, dan ojek Pos 1. Bayar lewat e-wallet, transfer bank, atau QRIS.",
       },
       { property: "og:title", content: "Ringkasan & Pembayaran — Muria Trail" },
       {
         property: "og:description",
-        content: "Rincian biaya tiket, asuransi, parkir, dan metode pembayaran e-wallet/QRIS.",
+        content: "Breakdown retribusi desa, simaksi, parkir, ojek Pos 1, dan pembayaran QRIS.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -31,10 +31,11 @@ const metode = [
 ];
 
 const rincian = [
-  { label: "Tiket pendakian (3 × Rp 15.000)", value: "Rp 45.000" },
-  { label: "Asuransi pendaki (3 orang)", value: "Rp 15.000" },
-  { label: "Parkir motor (2 unit)", value: "Rp 10.000" },
-  { label: "Biaya layanan", value: "Rp 2.500" },
+  { label: "Retribusi Desa Wisata Rahtawu (3 × Rp 3.000)", value: "Rp 9.000" },
+  { label: "Simaksi / tiket jalur (3 × Rp 5.000)", value: "Rp 15.000" },
+  { label: "Parkir motor (1 unit)", value: "Rp 10.000" },
+  { label: "Ojek Basecamp–Pos 1 (3 × Rp 25.000)", value: "Rp 75.000" },
+  { label: "Biaya layanan aplikasi", value: "Rp 2.500" },
 ];
 
 function Pembayaran() {
@@ -51,13 +52,15 @@ function Pembayaran() {
         <div className="rounded-3xl border border-border bg-card p-4 shadow-card">
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
             <div className="min-w-0">
-              <p className="truncate text-sm font-bold">Jalur Colo · Basecamp Colo 1</p>
+              <p className="truncate text-sm font-bold">
+                Rahtawu — Puncak 29 · Ds. Rahtawu, Gebog
+              </p>
               <p className="truncate text-[11px] text-muted-foreground">
-                Sabtu, 12 Juni 2026 · 05.00 WIB · 3 pendaki
+                Sabtu, 12 Juni 2026 · 05.00 WIB · 3 pendaki · naik ojek
               </p>
             </div>
             <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-bold text-primary">
-              2D1N
+              Tektok
             </span>
           </div>
           <div className="my-3 border-t border-dashed border-border" />
@@ -72,14 +75,19 @@ function Pembayaran() {
           <div className="my-3 border-t border-dashed border-border" />
           <div className="flex items-center justify-between">
             <span className="text-sm font-bold">Total bayar</span>
-            <span className="text-lg font-extrabold text-primary">Rp 72.500</span>
+            <span className="text-lg font-extrabold text-primary">Rp 111.500</span>
           </div>
+          <p className="mt-2 text-[10px] leading-relaxed text-muted-foreground">
+            Estimasi turun otomatis 15.30 WIB (naik 3–4 jam, turun ±2 jam) dikirim ke kontak
+            darurat bila belum check-out.
+          </p>
         </div>
 
         <div className="mt-3 flex items-start gap-2.5 rounded-2xl bg-secondary p-3">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={1.75} />
           <p className="text-[11px] leading-relaxed text-secondary-foreground">
-            Asuransi mencakup evakuasi darurat dan biaya medis dasar selama 48 jam pendakian.
+            Retribusi & simaksi dibayar ke pengelola desa. Tarif mengikuti data terakhir Pokdarwis
+            dan dapat berubah di lapangan. Porter dan homestay basecamp bisa ditambahkan terpisah.
           </p>
         </div>
 
@@ -120,7 +128,7 @@ function Pembayaran() {
           to="/tiket"
           className="surface-sunrise flex items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-bold text-accent-foreground shadow-sunrise"
         >
-          <Lock className="h-4 w-4" strokeWidth={2} /> Bayar Rp 72.500
+          <Lock className="h-4 w-4" strokeWidth={2} /> Bayar Rp 111.500
         </Link>
         <p className="mt-2 text-center text-[10px] text-muted-foreground">
           Pembayaran diproses aman. E-tiket otomatis tersimpan offline.
