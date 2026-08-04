@@ -117,7 +117,9 @@ function Beranda() {
           <div className="flex items-start gap-2.5 rounded-2xl border border-accent/30 bg-accent/10 p-3">
             <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-accent" strokeWidth={1.75} />
             <p className="text-[11px] leading-relaxed text-foreground/80">
-              Potensi hujan sore di atas Pos 3. Bawa jas hujan dan turun sebelum pukul 15.00 WIB.
+              <span className="font-bold">Status jalur: Dibuka · Waspada cuaca.</span> Diperbarui
+              admin basecamp Rahtawu 04.50 WIB. Desember–Februari jalur berpotensi ditutup
+              sementara.
             </p>
           </div>
 
@@ -162,9 +164,9 @@ function Beranda() {
                       <MapPin className="h-5 w-5" strokeWidth={1.5} />
                     </span>
                     <span className="min-w-0">
-                      <span className="block truncate text-sm font-bold">Jalur {j.nama}</span>
+                      <span className="block truncate text-sm font-bold">{j.nama}</span>
                       <span className="block truncate text-[11px] text-muted-foreground">
-                        {j.pos} · {j.jam} · {j.level}
+                        {j.desa} · {j.jam} · {j.level}
                       </span>
                     </span>
                     <span
