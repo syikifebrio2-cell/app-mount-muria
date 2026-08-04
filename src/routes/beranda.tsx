@@ -20,12 +20,12 @@ export const Route = createFileRoute("/beranda")({
       {
         name: "description",
         content:
-          "Cuaca real-time, sisa kuota pendaki harian, dan pilihan jalur pendakian Gunung Muria: Colo, Rahtawu, Tempur, dan Ternadi.",
+          "Status jalur, cuaca, dan kuota harian pendakian Gunung Muria via Rahtawu dan Tempur, plus akses wisata religi Colo.",
       },
       { property: "og:title", content: "Beranda Pendaki — Muria Trail" },
       {
         property: "og:description",
-        content: "Cuaca, kuota harian, dan jalur pendakian Gunung Muria dalam satu layar.",
+        content: "Status jalur Rahtawu & Tempur, cuaca, kuota harian, dan wisata religi Colo.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -35,10 +35,21 @@ export const Route = createFileRoute("/beranda")({
 });
 
 const jalur = [
-  { nama: "Colo", pos: "4 pos", jam: "5–6 jam", level: "Sedang", kuota: 168 },
-  { nama: "Rahtawu", pos: "5 pos", jam: "6–7 jam", level: "Sulit", kuota: 74 },
-  { nama: "Tempur", pos: "3 pos", jam: "4–5 jam", level: "Sedang", kuota: 41 },
-  { nama: "Ternadi", pos: "3 pos", jam: "4 jam", level: "Mudah", kuota: 0 },
+  { nama: "Rahtawu — Puncak 29", desa: "Gebog, Kudus", jam: "3–4 jam", level: "Sedang", kuota: 168 },
+  {
+    nama: "Rahtawu — Natas Angin",
+    desa: "Jalur Naga",
+    jam: "3–4 jam",
+    level: "Sulit",
+    kuota: 74,
+  },
+  {
+    nama: "Tempur — kawasan puncak",
+    desa: "Keling, Jepara",
+    jam: "Belum terverifikasi",
+    level: "—",
+    kuota: 41,
+  },
 ];
 
 function Beranda() {
