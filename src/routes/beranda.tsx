@@ -184,6 +184,31 @@ function Beranda() {
             </ul>
           </div>
 
+          <div>
+            <h3 className="text-sm font-bold">Wisata religi</h3>
+            <Link
+              to="/pesan"
+              className="mt-3 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-earth/25 bg-earth/8 p-3"
+            >
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-earth/15 text-earth">
+                <Landmark className="h-5 w-5" strokeWidth={1.5} />
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-bold">
+                  Colo — Ziarah Makam Sunan Muria
+                </span>
+                <span className="block truncate text-[11px] text-muted-foreground">
+                  ±500 mdpl · Dawe, Kudus · buka subuh–malam
+                </span>
+              </span>
+              <span className="shrink-0 rounded-full bg-earth/15 px-2.5 py-1 text-[10px] font-bold text-earth">
+                Religi
+              </span>
+            </Link>
+          </div>
+
+
+
           <div className="flex items-center justify-between rounded-2xl border border-dashed border-border px-3 py-2.5">
             <OfflineBadge label="Data jalur tersimpan offline" />
             <span className="text-[10px] text-muted-foreground">Sinkron 05.07 WIB</span>
