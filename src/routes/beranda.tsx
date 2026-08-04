@@ -9,6 +9,7 @@ import {
   MapPin,
   TriangleAlert,
   Mountain,
+  Landmark,
 } from "lucide-react";
 import { PhoneShell, OfflineBadge } from "@/components/PhoneShell";
 import hero from "@/assets/hero-muria.jpg";
