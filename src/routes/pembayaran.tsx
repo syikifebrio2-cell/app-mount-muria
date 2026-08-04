@@ -86,7 +86,8 @@ function Pembayaran() {
         <div className="mt-3 flex items-start gap-2.5 rounded-2xl bg-secondary p-3">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={1.75} />
           <p className="text-[11px] leading-relaxed text-secondary-foreground">
-            Asuransi mencakup evakuasi darurat dan biaya medis dasar selama 48 jam pendakian.
+            Retribusi & simaksi dibayar ke pengelola desa. Tarif mengikuti data terakhir Pokdarwis
+            dan dapat berubah di lapangan. Porter dan homestay basecamp bisa ditambahkan terpisah.
           </p>
         </div>
 
@@ -127,7 +128,7 @@ function Pembayaran() {
           to="/tiket"
           className="surface-sunrise flex items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-bold text-accent-foreground shadow-sunrise"
         >
-          <Lock className="h-4 w-4" strokeWidth={2} /> Bayar Rp 72.500
+          <Lock className="h-4 w-4" strokeWidth={2} /> Bayar Rp 111.500
         </Link>
         <p className="mt-2 text-center text-[10px] text-muted-foreground">
           Pembayaran diproses aman. E-tiket otomatis tersimpan offline.
