@@ -11,6 +11,8 @@ import {
   WifiOff,
 } from "lucide-react";
 import { PhoneShell, ScreenHeader } from "@/components/PhoneShell";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/profil")({
   head: () => ({
@@ -40,6 +42,11 @@ const riwayat = [
 ];
 
 function Profil() {
+  const navigate = useNavigate();
+  const keluar = async () => {
+    await supabase.auth.signOut();
+    navigate({ to: "/masuk" });
+  };
   return (
     <PhoneShell nav>
       <ScreenHeader
@@ -125,15 +132,15 @@ function Profil() {
           <Toggle icon={Bell} label="Promo & info kuota" />
         </div>
 
-        <Link
-          to="/masuk"
-          className="mt-4 flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3.5 text-sm font-semibold text-destructive shadow-card"
+        <button
+          onClick={keluar}
+          className="mt-4 flex w-full items-center justify-between rounded-2xl border border-border bg-card px-4 py-3.5 text-sm font-semibold text-destructive shadow-card"
         >
           <span className="flex items-center gap-2">
             <LogOut className="h-4 w-4" strokeWidth={1.75} /> Keluar akun
           </span>
           <ChevronRight className="h-4 w-4" strokeWidth={1.75} />
-        </Link>
+        </button>
       </div>
     </PhoneShell>
   );
