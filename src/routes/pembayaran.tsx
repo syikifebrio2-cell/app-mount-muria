@@ -1,7 +1,12 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Wallet, Landmark, QrCode, ShieldCheck, ChevronRight, Lock } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Wallet, Landmark, QrCode, ShieldCheck, Lock, Loader2, FlaskConical } from "lucide-react";
+import { toast } from "sonner";
 import { PhoneShell, ScreenHeader } from "@/components/PhoneShell";
+import { useAuth } from "@/hooks/useAuth";
+import { useBookingDraft, simpanDraft, hapusDraft } from "@/lib/booking-draft";
+import { bayarMock } from "@/lib/booking";
+import { rupiah } from "@/data/muria";
 
 export const Route = createFileRoute("/pembayaran")({
   head: () => ({
@@ -10,7 +15,7 @@ export const Route = createFileRoute("/pembayaran")({
       {
         name: "description",
         content:
-          "Rincian biaya pendakian Rahtawu per pos: retribusi desa wisata, simaksi jalur, parkir, dan ojek Pos 1. Bayar lewat e-wallet, transfer bank, atau QRIS.",
+          "Rincian biaya pendakian per pos: retribusi desa wisata, simaksi jalur, parkir, dan ojek Pos 1. Bayar lewat e-wallet, transfer bank, atau QRIS.",
       },
       { property: "og:title", content: "Ringkasan & Pembayaran — Muria Trail" },
       {
@@ -30,16 +35,38 @@ const metode = [
   { id: "qris", nama: "QRIS", detail: "Semua aplikasi pembayaran", icon: QrCode },
 ];
 
-const rincian = [
-  { label: "Retribusi Desa Wisata Rahtawu (3 × Rp 3.000)", value: "Rp 9.000" },
-  { label: "Simaksi / tiket jalur (3 × Rp 5.000)", value: "Rp 15.000" },
-  { label: "Parkir motor (1 unit)", value: "Rp 10.000" },
-  { label: "Ojek Basecamp–Pos 1 (3 × Rp 25.000)", value: "Rp 75.000" },
-  { label: "Biaya layanan aplikasi", value: "Rp 2.500" },
-];
-
 function Pembayaran() {
-  const [pilih, setPilih] = useState("qris");
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { draft } = useBookingDraft();
+  const [pilih, setPilih] = useState(draft.metode || "qris");
+  const [proses, setProses] = useState(false);
+
+  const layanan = draft.total > 0 ? 2500 : 0;
+  const total = draft.total + layanan;
+
+  async function bayar() {
+    if (!user) {
+      toast.error("Masuk dulu untuk menyelesaikan pemesanan");
+      navigate({ to: "/masuk" });
+      return;
+    }
+    setProses(true);
+    try {
+      simpanDraft({ metode: pilih, total });
+      const booking = await bayarMock(
+        { ...draft, metode: pilih, total, rincian: [...draft.rincian, { label: "Biaya layanan aplikasi", nominal: layanan }] },
+        user.id,
+      );
+      hapusDraft();
+      toast.success(`Pembayaran (mock) berhasil · ${booking.kode_booking}`);
+      navigate({ to: "/tiket" });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Gagal memproses pembayaran");
+    } finally {
+      setProses(false);
+    }
+  }
 
   return (
     <PhoneShell>
@@ -49,45 +76,59 @@ function Pembayaran() {
           <div className="surface-sunrise h-full w-3/4 rounded-full" />
         </div>
 
+        <div className="mb-3 flex items-start gap-2.5 rounded-2xl border border-accent/30 bg-accent/8 p-3">
+          <FlaskConical className="mt-0.5 h-4 w-4 shrink-0 text-accent" strokeWidth={1.75} />
+          <p className="text-[11px] leading-relaxed text-foreground/80">
+            <span className="font-bold">Mode pembayaran simulasi.</span> Tidak ada uang yang
+            ditarik — tiket tetap tersimpan agar alur bisa diuji sebelum gateway asli aktif.
+          </p>
+        </div>
+
         <div className="rounded-3xl border border-border bg-card p-4 shadow-card">
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
             <div className="min-w-0">
-              <p className="truncate text-sm font-bold">
-                Rahtawu — Puncak 29 · Ds. Rahtawu, Gebog
-              </p>
+              <p className="truncate text-sm font-bold">{draft.jalur_nama}</p>
               <p className="truncate text-[11px] text-muted-foreground">
-                Sabtu, 12 Juni 2026 · 05.00 WIB · 3 pendaki · naik ojek
+                {draft.tanggal_naik || "Tanggal belum dipilih"} · {draft.jam_mulai} ·{" "}
+                {draft.jumlah_pendaki} pendaki {draft.pakai_ojek ? "· naik ojek" : ""}
               </p>
             </div>
-            <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-bold text-primary">
-              Tektok
+            <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-bold capitalize text-primary">
+              {draft.tipe}
             </span>
           </div>
           <div className="my-3 border-t border-dashed border-border" />
           <ul className="space-y-2">
-            {rincian.map((r) => (
+            {draft.rincian.map((r) => (
               <li key={r.label} className="flex items-start justify-between gap-3 text-xs">
                 <span className="min-w-0 text-muted-foreground">{r.label}</span>
-                <span className="shrink-0 font-semibold">{r.value}</span>
+                <span className="shrink-0 font-semibold">{rupiah(r.nominal)}</span>
               </li>
             ))}
+            {layanan > 0 ? (
+              <li className="flex items-start justify-between gap-3 text-xs">
+                <span className="min-w-0 text-muted-foreground">Biaya layanan aplikasi</span>
+                <span className="shrink-0 font-semibold">{rupiah(layanan)}</span>
+              </li>
+            ) : null}
+            {draft.rincian.length === 0 ? (
+              <li className="text-[11px] text-muted-foreground">
+                Belum ada rincian biaya — kembali ke langkah 1 untuk memilih jalur.
+              </li>
+            ) : null}
           </ul>
           <div className="my-3 border-t border-dashed border-border" />
           <div className="flex items-center justify-between">
             <span className="text-sm font-bold">Total bayar</span>
-            <span className="text-lg font-extrabold text-primary">Rp 111.500</span>
+            <span className="text-lg font-extrabold text-primary">{rupiah(total)}</span>
           </div>
-          <p className="mt-2 text-[10px] leading-relaxed text-muted-foreground">
-            Estimasi turun otomatis 15.30 WIB (naik 3–4 jam, turun ±2 jam) dikirim ke kontak
-            darurat bila belum check-out.
-          </p>
         </div>
 
         <div className="mt-3 flex items-start gap-2.5 rounded-2xl bg-secondary p-3">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={1.75} />
           <p className="text-[11px] leading-relaxed text-secondary-foreground">
             Retribusi & simaksi dibayar ke pengelola desa. Tarif mengikuti data terakhir Pokdarwis
-            dan dapat berubah di lapangan. Porter dan homestay basecamp bisa ditambahkan terpisah.
+            dan dapat berubah di lapangan.
           </p>
         </div>
 
@@ -116,22 +157,23 @@ function Pembayaran() {
             </button>
           ))}
         </div>
-
-        <button className="mt-3 flex w-full items-center justify-between rounded-2xl border border-dashed border-border px-3.5 py-3">
-          <span className="text-xs font-semibold text-muted-foreground">Punya kode promo?</span>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" strokeWidth={1.75} />
-        </button>
       </div>
 
       <div className="border-t border-border bg-card px-5 pb-6 pt-3">
-        <Link
-          to="/tiket"
-          className="surface-sunrise flex items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-bold text-accent-foreground shadow-sunrise"
+        <button
+          onClick={bayar}
+          disabled={proses}
+          className="surface-sunrise flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-bold text-accent-foreground shadow-sunrise disabled:opacity-70"
         >
-          <Lock className="h-4 w-4" strokeWidth={2} /> Bayar Rp 111.500
-        </Link>
+          {proses ? (
+            <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2} />
+          ) : (
+            <Lock className="h-4 w-4" strokeWidth={2} />
+          )}
+          {proses ? "Memproses pembayaran…" : `Bayar ${rupiah(total)}`}
+        </button>
         <p className="mt-2 text-center text-[10px] text-muted-foreground">
-          Pembayaran diproses aman. E-tiket otomatis tersimpan offline.
+          Simulasi pembayaran. E-tiket otomatis tersimpan offline.
         </p>
       </div>
     </PhoneShell>
