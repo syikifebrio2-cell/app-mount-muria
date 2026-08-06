@@ -4,7 +4,7 @@ import { Minus, Plus, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { PhoneShell, ScreenHeader } from "@/components/PhoneShell";
 import { useAuth, useProfil } from "@/hooks/useAuth";
-import { useBookingDraft, type Anggota } from "@/lib/booking-draft";
+import { useBookingDraft, simpanDraft, type Anggota } from "@/lib/booking-draft";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/registrasi")({
@@ -75,8 +75,6 @@ function Registrasi() {
     }
     const { rincian, total, jumlah_pendaki } = draft;
     const faktor = jumlah_pendaki ? jumlah / jumlah_pendaki : 1;
-    useBookingDraft; // noop guard
-    const { simpanDraft } = await import("@/lib/booking-draft");
     simpanDraft({
       ketua,
       anggota,
