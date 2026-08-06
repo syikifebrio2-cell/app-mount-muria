@@ -1,7 +1,10 @@
-import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Phone, Mail, ShieldCheck } from "lucide-react";
+import { useEffect, useState } from "react";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { Phone, Mail, ShieldCheck, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { PhoneShell } from "@/components/PhoneShell";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import logo from "@/assets/logo-muria.png";
 
 export const Route = createFileRoute("/masuk")({
@@ -27,7 +30,71 @@ export const Route = createFileRoute("/masuk")({
 
 function Masuk() {
   const [mode, setMode] = useState<"masuk" | "daftar">("masuk");
-  const [via, setVia] = useState<"hp" | "email">("hp");
+  const [via, setVia] = useState<"hp" | "email">("email");
+  const [nama, setNama] = useState("");
+  const [email, setEmail] = useState("");
+  const [hp, setHp] = useState("");
+  const [sandi, setSandi] = useState("");
+  const [proses, setProses] = useState(false);
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && user) navigate({ to: "/beranda" });
+  }, [user, loading, navigate]);
+
+  // Nomor HP dipetakan ke email internal agar bisa dipakai sebagai kredensial.
+  const emailLogin = () =>
+    via === "email" ? email.trim() : `${hp.replace(/\D/g, "")}@hp.muriatrail.app`;
+
+  async function submit() {
+    if (!sandi || (via === "email" ? !email : !hp)) {
+      toast.error("Lengkapi data dulu ya");
+      return;
+    }
+    setProses(true);
+    try {
+      if (mode === "daftar") {
+        const { error } = await supabase.auth.signUp({
+          email: emailLogin(),
+          password: sandi,
+          options: {
+            emailRedirectTo: `${window.location.origin}/beranda`,
+            data: { nama_lengkap: nama, no_hp: hp },
+          },
+        });
+        if (error) throw error;
+        toast.success("Akun dibuat. Selamat datang, pendaki!");
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: emailLogin(),
+          password: sandi,
+        });
+        if (error) throw error;
+        toast.success("Berhasil masuk");
+      }
+      navigate({ to: "/beranda" });
+    } catch (e) {
+      const pesan = e instanceof Error ? e.message : "Gagal memproses";
+      toast.error(
+        pesan.includes("Invalid login")
+          ? "Email/nomor atau kata sandi salah"
+          : pesan.includes("already registered")
+            ? "Akun sudah terdaftar, silakan masuk"
+            : pesan,
+      );
+    } finally {
+      setProses(false);
+    }
+  }
+
+  async function google() {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/beranda` },
+    });
+    if (error) toast.error(error.message);
+  }
 
   return (
     <PhoneShell>
@@ -60,36 +127,59 @@ function Masuk() {
         </div>
 
         <div className="mt-4 space-y-3">
-          {mode === "daftar" ? <Field label="Nama lengkap" placeholder="Nama sesuai KTP" /> : null}
+          {mode === "daftar" ? (
+            <Field label="Nama lengkap" placeholder="Nama sesuai KTP" value={nama} onChange={setNama} />
+          ) : null}
           {via === "hp" ? (
-            <Field label="Nomor HP" placeholder="+62 8•• •••• ••••" prefix="ID" />
+            <Field
+              label="Nomor HP"
+              placeholder="08xx xxxx xxxx"
+              prefix="ID"
+              value={hp}
+              onChange={setHp}
+              type="tel"
+            />
           ) : (
-            <Field label="Email" placeholder="nama@email.com" />
+            <Field
+              label="Email"
+              placeholder="nama@email.com"
+              value={email}
+              onChange={setEmail}
+              type="email"
+            />
           )}
-          <Field label="Kata sandi" placeholder="••••••••" />
+          <Field
+            label="Kata sandi"
+            placeholder="minimal 6 karakter"
+            value={sandi}
+            onChange={setSandi}
+            type="password"
+          />
         </div>
 
-        {mode === "masuk" ? (
-          <button className="mt-3 self-end text-xs font-semibold text-primary">Lupa sandi?</button>
-        ) : null}
-
-        <Link
-          to="/beranda"
-          className="mt-5 flex items-center justify-center rounded-2xl bg-primary py-3.5 text-sm font-bold text-primary-foreground shadow-card"
+        <button
+          onClick={submit}
+          disabled={proses}
+          className="mt-5 flex items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-sm font-bold text-primary-foreground shadow-card disabled:opacity-60"
         >
+          {proses ? <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2} /> : null}
           {mode === "masuk" ? "Masuk" : "Daftar sekarang"}
-        </Link>
+        </button>
 
         <div className="my-5 flex items-center gap-3 text-[11px] text-muted-foreground">
           <span className="h-px flex-1 bg-border" /> atau <span className="h-px flex-1 bg-border" />
         </div>
 
-        <Link
-          to="/beranda"
+        <button
+          onClick={google}
           className="flex items-center justify-center gap-2.5 rounded-2xl border border-border bg-card py-3.5 text-sm font-semibold shadow-card"
         >
           <GoogleMark />
           Lanjutkan dengan Google
+        </button>
+
+        <Link to="/beranda" className="mt-4 text-center text-[11px] font-semibold text-muted-foreground">
+          Lihat aplikasi tanpa masuk
         </Link>
 
         <div className="mt-auto flex items-start gap-2 pt-6 text-[11px] leading-relaxed text-muted-foreground">
@@ -134,10 +224,16 @@ function Field({
   label,
   placeholder,
   prefix,
+  value,
+  onChange,
+  type = "text",
 }: {
   label: string;
   placeholder: string;
   prefix?: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
 }) {
   return (
     <label className="block">
@@ -149,6 +245,9 @@ function Field({
           </span>
         ) : null}
         <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
         />

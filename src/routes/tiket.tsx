@@ -1,6 +1,11 @@
+import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Download, Share2, CheckCircle2, Users, CalendarDays, MapPin } from "lucide-react";
+import { CheckCircle2, Users, CalendarDays, MapPin, Loader2, Ticket } from "lucide-react";
 import { PhoneShell, ScreenHeader, OfflineBadge } from "@/components/PhoneShell";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { cacheTiket, tiketDariCache, type Booking } from "@/lib/booking";
+import { rupiah } from "@/data/muria";
 
 export const Route = createFileRoute("/tiket")({
   head: () => ({
@@ -23,12 +28,6 @@ export const Route = createFileRoute("/tiket")({
   component: Tiket,
 });
 
-const anggota = [
-  { nama: "Raka Wibowo", nik: "3319•••••••0012", darah: "O" },
-  { nama: "Dimas Ardhana", nik: "3319•••••••0847", darah: "B" },
-  { nama: "Sinta Larasati", nik: "3319•••••••1123", darah: "A" },
-];
-
 const syarat = [
   "Wajib lapor di basecamp maksimal 30 menit sebelum jam masuk.",
   "Dilarang membuat api unggun & memetik tumbuhan di kawasan konservasi.",
@@ -37,108 +36,132 @@ const syarat = [
 ];
 
 function Tiket() {
+  const { user, loading } = useAuth();
+  const [tiket, setTiket] = useState<Booking[]>([]);
+  const [memuat, setMemuat] = useState(true);
+  const [offline, setOffline] = useState(false);
+
+  useEffect(() => {
+    setTiket(tiketDariCache());
+  }, []);
+
+  useEffect(() => {
+    if (loading) return;
+    if (!user) {
+      setMemuat(false);
+      return;
+    }
+    supabase
+      .from("bookings")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .then(({ data, error }) => {
+        if (error || !data) {
+          setOffline(true);
+        } else {
+          const rows = data as unknown as Booking[];
+          setTiket(rows);
+          cacheTiket(rows);
+        }
+        setMemuat(false);
+      });
+  }, [user, loading]);
+
+  const aktif = tiket.filter((t) => t.status_pembayaran === "lunas");
+
   return (
     <PhoneShell nav>
       <ScreenHeader
         title="Tiket Saya"
-        subtitle="1 tiket aktif"
-        action={<OfflineBadge label="Offline siap" />}
+        subtitle={`${aktif.length} tiket aktif`}
+        action={<OfflineBadge label={offline ? "Mode offline" : "Offline siap"} />}
       />
       <div className="no-scrollbar flex-1 overflow-y-auto px-5 pb-6">
-        <div className="flex items-center gap-2 rounded-2xl bg-success/10 px-3 py-2.5">
-          <CheckCircle2 className="h-4 w-4 shrink-0 text-success" strokeWidth={1.75} />
-          <p className="text-[11px] font-semibold text-success">
-            Pembayaran berhasil · Registrasi terverifikasi
-          </p>
-        </div>
-
-        <div className="mt-3 overflow-hidden rounded-3xl bg-card shadow-lifted">
-          <div className="surface-summit px-4 py-3.5 text-primary-foreground">
-            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-              <div className="min-w-0">
-                <p className="text-[10px] uppercase tracking-widest text-primary-foreground/60">
-                  E-Tiket Pendakian
-                </p>
-                <p className="truncate text-base font-extrabold">Gunung Muria · Jalur Colo</p>
-              </div>
-              <span className="shrink-0 rounded-full bg-accent px-2.5 py-1 text-[10px] font-bold text-accent-foreground">
-                AKTIF
-              </span>
-            </div>
+        {memuat && tiket.length === 0 ? (
+          <div className="flex items-center gap-2 rounded-2xl bg-secondary px-3 py-3 text-[11px] font-semibold text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin text-primary" /> Memuat tiket…
           </div>
+        ) : null}
 
-          <div className="flex flex-col items-center px-4 py-5">
-            <div className="rounded-2xl border border-border bg-background p-3">
-              <QrPlaceholder />
-            </div>
-            <p className="mt-3 text-[11px] text-muted-foreground">Kode booking</p>
-            <p className="text-lg font-extrabold tracking-[0.2em]">MTR-8F42K</p>
-            <p className="mt-1 text-[10px] text-muted-foreground">
-              Tunjukkan QR ini di pos registrasi basecamp
+        {!memuat && aktif.length === 0 ? (
+          <div className="rounded-3xl border border-dashed border-border bg-card p-6 text-center">
+            <Ticket className="mx-auto h-6 w-6 text-primary" strokeWidth={1.5} />
+            <p className="mt-2 text-sm font-bold">Belum ada tiket</p>
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              {user ? "Pesan jalur & tanggal untuk membuat e-tiket." : "Masuk dulu untuk melihat tiketmu."}
             </p>
-          </div>
-
-          <div className="relative">
-            <span className="absolute -left-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-background" />
-            <span className="absolute -right-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-background" />
-            <div className="border-t border-dashed border-border" />
-          </div>
-
-          <div className="grid grid-cols-3 gap-2 px-4 py-4">
-            <Fact icon={CalendarDays} label="Tanggal" value="12 Jun 2026" />
-            <Fact icon={Users} label="Rombongan" value="3 pendaki" />
-            <Fact icon={MapPin} label="Basecamp" value="Colo 1" />
-          </div>
-        </div>
-
-        <div className="mt-3 grid grid-cols-2 gap-2.5">
-          <button className="flex items-center justify-center gap-2 rounded-2xl border border-border bg-card py-3 text-xs font-bold shadow-card">
-            <Download className="h-4 w-4" strokeWidth={1.75} /> Simpan offline
-          </button>
-          <button className="flex items-center justify-center gap-2 rounded-2xl border border-border bg-card py-3 text-xs font-bold shadow-card">
-            <Share2 className="h-4 w-4" strokeWidth={1.75} /> Bagikan
-          </button>
-        </div>
-
-        <h2 className="mt-6 text-xs font-bold text-muted-foreground">DETAIL ROMBONGAN</h2>
-        <ul className="mt-2.5 space-y-2">
-          {anggota.map((a, i) => (
-            <li
-              key={a.nik}
-              className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-card"
+            <Link
+              to={user ? "/pesan" : "/masuk"}
+              className="mt-4 inline-flex rounded-2xl bg-primary px-5 py-3 text-xs font-bold text-primary-foreground"
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-                {i + 1}
-              </span>
-              <span className="min-w-0">
-                <span className="block truncate text-sm font-semibold">{a.nama}</span>
-                <span className="block truncate text-[11px] text-muted-foreground">
-                  NIK {a.nik}
-                </span>
-              </span>
-              <span className="shrink-0 rounded-full bg-destructive/10 px-2 py-0.5 text-[10px] font-bold text-destructive">
-                Gol. {a.darah}
-              </span>
-            </li>
-          ))}
-        </ul>
+              {user ? "Pesan tiket" : "Masuk"}
+            </Link>
+          </div>
+        ) : null}
 
-        <h2 className="mt-6 text-xs font-bold text-muted-foreground">SYARAT & KETENTUAN</h2>
-        <ol className="mt-2.5 space-y-2 rounded-2xl border border-border bg-card p-4 shadow-card">
-          {syarat.map((s, i) => (
-            <li key={s} className="flex gap-2.5 text-[11px] leading-relaxed text-foreground/80">
-              <span className="font-bold text-accent">{i + 1}.</span>
-              {s}
-            </li>
-          ))}
-        </ol>
+        {aktif.map((t) => (
+          <div key={t.id} className="mb-4">
+            <div className="flex items-center gap-2 rounded-2xl bg-success/10 px-3 py-2.5">
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-success" strokeWidth={1.75} />
+              <p className="text-[11px] font-semibold text-success">
+                Pembayaran berhasil · Registrasi terverifikasi
+              </p>
+            </div>
 
-        <Link
-          to="/jalur"
-          className="mt-4 flex items-center justify-center rounded-2xl bg-primary py-3.5 text-sm font-bold text-primary-foreground shadow-card"
-        >
-          Lihat info jalur Colo
-        </Link>
+            <div className="mt-3 overflow-hidden rounded-3xl bg-card shadow-lifted">
+              <div className="surface-summit px-4 py-3.5 text-primary-foreground">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+                  <div className="min-w-0">
+                    <p className="text-[10px] uppercase tracking-widest text-primary-foreground/60">
+                      E-Tiket Pendakian
+                    </p>
+                    <p className="truncate text-base font-extrabold">{t.jalur_nama}</p>
+                  </div>
+                  <span className="shrink-0 rounded-full bg-accent px-2.5 py-1 text-[10px] font-bold text-accent-foreground">
+                    AKTIF
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center px-4 py-5">
+                <div className="rounded-2xl border border-border bg-background p-3">
+                  <QrPlaceholder seed={t.kode_booking} />
+                </div>
+                <p className="mt-3 text-[11px] text-muted-foreground">Kode booking</p>
+                <p className="text-lg font-extrabold tracking-[0.2em]">{t.kode_booking}</p>
+                <p className="mt-1 text-[10px] text-muted-foreground">
+                  Tunjukkan QR ini di pos registrasi basecamp · {rupiah(t.total_biaya)}
+                </p>
+              </div>
+
+              <div className="relative">
+                <span className="absolute -left-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-background" />
+                <span className="absolute -right-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-background" />
+                <div className="border-t border-dashed border-border" />
+              </div>
+
+              <div className="grid grid-cols-3 gap-2 px-4 py-4">
+                <Fact icon={CalendarDays} label="Tanggal" value={t.tanggal_naik} />
+                <Fact icon={Users} label="Rombongan" value={`${t.jumlah_pendaki} pendaki`} />
+                <Fact icon={MapPin} label="Jalur" value={t.jalur_id.split("_")[0]} />
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {aktif.length ? (
+          <>
+            <h2 className="mt-2 text-xs font-bold text-muted-foreground">SYARAT & KETENTUAN</h2>
+            <ol className="mt-2.5 space-y-2 rounded-2xl border border-border bg-card p-4 shadow-card">
+              {syarat.map((s, i) => (
+                <li key={s} className="flex gap-2.5 text-[11px] leading-relaxed text-foreground/80">
+                  <span className="font-bold text-accent">{i + 1}.</span>
+                  {s}
+                </li>
+              ))}
+            </ol>
+          </>
+        ) : null}
       </div>
     </PhoneShell>
   );
@@ -157,30 +180,28 @@ function Fact({
     <div className="rounded-2xl bg-secondary px-2.5 py-2">
       <Icon className="h-3.5 w-3.5 text-primary" strokeWidth={1.75} />
       <p className="mt-1 truncate text-[10px] text-muted-foreground">{label}</p>
-      <p className="truncate text-[11px] font-bold">{value}</p>
+      <p className="truncate text-[11px] font-bold capitalize">{value}</p>
     </div>
   );
 }
 
-function QrPlaceholder() {
+function QrPlaceholder({ seed }: { seed: string }) {
+  const angka = seed.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
   const cells = Array.from({ length: 169 }, (_, i) => {
     const r = Math.floor(i / 13);
     const c = i % 13;
-    const corner =
-      (r < 4 && c < 4) || (r < 4 && c > 8) || (r > 8 && c < 4);
-    const on = corner
-      ? (r === 0 || r === 3 || c === 0 || c === 3 || (r === 1 && c === 1)) ||
-        (r % 3 === 1 && c % 3 === 1)
-      : (r * 7 + c * 5 + ((r * c) % 5)) % 3 !== 0;
-    return on;
+    const corner = (r < 4 && c < 4) || (r < 4 && c > 8) || (r > 8 && c < 4);
+    return corner
+      ? r === 0 || r === 3 || c === 0 || c === 3 || (r === 1 && c === 1) || (r % 3 === 1 && c % 3 === 1)
+      : (r * 7 + c * 5 + angka + ((r * c) % 5)) % 3 !== 0;
   });
   return (
-    <div className="grid h-36 w-36 grid-cols-[repeat(13,minmax(0,1fr))] gap-px" aria-label="QR code e-tiket">
+    <div
+      className="grid h-36 w-36 grid-cols-[repeat(13,minmax(0,1fr))] gap-px"
+      aria-label={`QR code e-tiket ${seed}`}
+    >
       {cells.map((on, i) => (
-        <span
-          key={i}
-          className={on ? "rounded-[1px] bg-primary-deep" : "bg-transparent"}
-        />
+        <span key={i} className={on ? "rounded-[1px] bg-primary-deep" : "bg-transparent"} />
       ))}
     </div>
   );
