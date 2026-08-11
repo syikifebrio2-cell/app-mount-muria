@@ -63,7 +63,15 @@ export async function bayarMock(draft: BookingDraft, userId: string) {
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    // kembalikan slot kuota bila pembuatan booking gagal
+    await supabase.rpc("batal_kuota", {
+      _jalur_id: draft.jalur_id,
+      _tanggal: tanggal,
+      _jumlah: draft.jumlah_pendaki,
+    });
+    throw error;
+  }
 
   const anggota = [
     {
