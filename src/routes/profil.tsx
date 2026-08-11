@@ -132,6 +132,16 @@ function Profil() {
           <Toggle icon={Bell} label="Promo & info kuota" />
         </div>
 
+        <Link
+          to="/admin"
+          className="mt-4 flex w-full items-center justify-between rounded-2xl border border-border bg-card px-4 py-3.5 text-sm font-semibold shadow-card"
+        >
+          <span className="flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4" strokeWidth={1.75} /> Dashboard basecamp (admin)
+          </span>
+          <ChevronRight className="h-4 w-4" strokeWidth={1.75} />
+        </Link>
+
         <button
           onClick={keluar}
           className="mt-4 flex w-full items-center justify-between rounded-2xl border border-border bg-card px-4 py-3.5 text-sm font-semibold text-destructive shadow-card"
