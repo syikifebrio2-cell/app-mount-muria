@@ -49,7 +49,7 @@ export async function bayarMock(draft: BookingDraft, userId: string) {
       kode_booking: kode,
       jalur_id: draft.jalur_id,
       jalur_nama: draft.jalur_nama,
-      tanggal_naik: draft.tanggal_naik || new Date().toISOString().slice(0, 10),
+      tanggal_naik: tanggal,
       jam_mulai: draft.jam_mulai,
       tipe: draft.tipe,
       jumlah_pendaki: draft.jumlah_pendaki,
