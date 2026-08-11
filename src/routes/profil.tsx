@@ -8,6 +8,7 @@ import {
   Mountain,
   Settings,
   ShieldAlert,
+  ShieldCheck,
   WifiOff,
 } from "lucide-react";
 import { PhoneShell, ScreenHeader } from "@/components/PhoneShell";
