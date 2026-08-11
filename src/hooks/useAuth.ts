@@ -36,6 +36,37 @@ export function useAuth() {
   return { session, user, loading };
 }
 
+export function useIsAdmin(userId?: string) {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let aktif = true;
+    if (!userId) {
+      setIsAdmin(false);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!aktif) return;
+        setIsAdmin(Boolean(data));
+        setLoading(false);
+      });
+    return () => {
+      aktif = false;
+    };
+  }, [userId]);
+
+  return { isAdmin, loading, setIsAdmin };
+}
+
 export function useProfil(userId?: string) {
   const [profil, setProfil] = useState<Profil | null>(null);
   const [loading, setLoading] = useState(true);

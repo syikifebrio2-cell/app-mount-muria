@@ -32,6 +32,15 @@ export function buatKodeBooking() {
 /** Pembayaran mock: menunda sejenak lalu menandai lunas tanpa transaksi nyata. */
 export async function bayarMock(draft: BookingDraft, userId: string) {
   const kode = buatKodeBooking();
+  const tanggal = draft.tanggal_naik || new Date().toISOString().slice(0, 10);
+
+  // Ambil slot kuota harian dulu — gagal di sini berarti kuota habis.
+  const { error: errKuota } = await supabase.rpc("pakai_kuota", {
+    _jalur_id: draft.jalur_id,
+    _tanggal: tanggal,
+    _jumlah: draft.jumlah_pendaki,
+  });
+  if (errKuota) throw errKuota;
 
   const { data, error } = await supabase
     .from("bookings")
@@ -40,7 +49,7 @@ export async function bayarMock(draft: BookingDraft, userId: string) {
       kode_booking: kode,
       jalur_id: draft.jalur_id,
       jalur_nama: draft.jalur_nama,
-      tanggal_naik: draft.tanggal_naik || new Date().toISOString().slice(0, 10),
+      tanggal_naik: tanggal,
       jam_mulai: draft.jam_mulai,
       tipe: draft.tipe,
       jumlah_pendaki: draft.jumlah_pendaki,
@@ -54,7 +63,15 @@ export async function bayarMock(draft: BookingDraft, userId: string) {
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    // kembalikan slot kuota bila pembuatan booking gagal
+    await supabase.rpc("batal_kuota", {
+      _jalur_id: draft.jalur_id,
+      _tanggal: tanggal,
+      _jumlah: draft.jumlah_pendaki,
+    });
+    throw error;
+  }
 
   const anggota = [
     {
