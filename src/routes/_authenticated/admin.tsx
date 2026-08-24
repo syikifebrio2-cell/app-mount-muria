@@ -53,6 +53,8 @@ function hariIniIso() {
 function Admin() {
   const { user, loading: loadingAuth } = useAuth();
   const { isAdmin, loading: loadingRole, setIsAdmin } = useIsAdmin(user?.id);
+  const validasiFn = useServerFn(validasiTiketFn);
+
 
   const [tanggal, setTanggal] = useState(hariIniIso());
   const [jalurId, setJalurId] = useState(JALUR[0].id);
