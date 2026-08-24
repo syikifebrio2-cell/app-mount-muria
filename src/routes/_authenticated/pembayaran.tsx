@@ -40,6 +40,7 @@ function Pembayaran() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { draft } = useBookingDraft();
+  const buatBookingFn = useServerFn(buatBooking);
   const [pilih, setPilih] = useState(draft.metode || "qris");
   const [proses, setProses] = useState(false);
 
@@ -55,10 +56,14 @@ function Pembayaran() {
     setProses(true);
     try {
       simpanDraft({ metode: pilih, total });
-      const booking = await bayarMock(
-        { ...draft, metode: pilih, total, rincian: [...draft.rincian, { label: "Biaya layanan aplikasi", nominal: layanan }] },
-        user.id,
-      );
+      const booking = await buatBookingFn({
+        data: {
+          ...draft,
+          metode: pilih,
+          total,
+          rincian: [...draft.rincian, { label: "Biaya layanan aplikasi", nominal: layanan }],
+        },
+      });
       hapusDraft();
       toast.success(`Pembayaran (mock) berhasil · ${booking.kode_booking}`);
       navigate({ to: "/tiket" });
