@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { ShieldCheck, QrCode, CalendarDays, Users, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { PhoneShell, ScreenHeader, LoadingBar } from "@/components/PhoneShell";
 import { JALUR, rupiah } from "@/data/muria";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, useIsAdmin } from "@/hooks/useAuth";
+import { validasiTiket as validasiTiketFn } from "@/lib/booking.functions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({

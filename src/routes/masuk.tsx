@@ -178,8 +178,8 @@ function Masuk() {
           Lanjutkan dengan Google
         </button>
 
-        <Link to="/beranda" className="mt-4 text-center text-[11px] font-semibold text-muted-foreground">
-          Lihat aplikasi tanpa masuk
+        <Link to="/jalur" className="mt-4 text-center text-[11px] font-semibold text-muted-foreground">
+          Lihat info jalur tanpa masuk
         </Link>
 
         <div className="mt-auto flex items-start gap-2 pt-6 text-[11px] leading-relaxed text-muted-foreground">
