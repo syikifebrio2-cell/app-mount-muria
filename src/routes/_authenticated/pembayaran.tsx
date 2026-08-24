@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { Wallet, Landmark, QrCode, ShieldCheck, Lock, Loader2, FlaskConical } from "lucide-react";
 import { toast } from "sonner";
 import { PhoneShell, ScreenHeader } from "@/components/PhoneShell";
 import { useAuth } from "@/hooks/useAuth";
 import { useBookingDraft, simpanDraft, hapusDraft } from "@/lib/booking-draft";
-import { bayarMock } from "@/lib/booking";
+import { buatBooking } from "@/lib/booking.functions";
 import { rupiah } from "@/data/muria";
 
-export const Route = createFileRoute("/pembayaran")({
+export const Route = createFileRoute("/_authenticated/pembayaran")({
   head: () => ({
     meta: [
       { title: "Ringkasan Biaya Retribusi & Simaksi — Muria Trail" },
@@ -39,6 +40,7 @@ function Pembayaran() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { draft } = useBookingDraft();
+  const buatBookingFn = useServerFn(buatBooking);
   const [pilih, setPilih] = useState(draft.metode || "qris");
   const [proses, setProses] = useState(false);
 
@@ -54,10 +56,14 @@ function Pembayaran() {
     setProses(true);
     try {
       simpanDraft({ metode: pilih, total });
-      const booking = await bayarMock(
-        { ...draft, metode: pilih, total, rincian: [...draft.rincian, { label: "Biaya layanan aplikasi", nominal: layanan }] },
-        user.id,
-      );
+      const booking = await buatBookingFn({
+        data: {
+          ...draft,
+          metode: pilih,
+          total,
+          rincian: [...draft.rincian, { label: "Biaya layanan aplikasi", nominal: layanan }],
+        },
+      });
       hapusDraft();
       toast.success(`Pembayaran (mock) berhasil · ${booking.kode_booking}`);
       navigate({ to: "/tiket" });

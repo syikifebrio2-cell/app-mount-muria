@@ -16,7 +16,7 @@ import { JALUR, rupiah, type Jalur } from "@/data/muria";
 import { supabase } from "@/integrations/supabase/client";
 import { simpanDraft } from "@/lib/booking-draft";
 
-export const Route = createFileRoute("/pesan")({
+export const Route = createFileRoute("/_authenticated/pesan")({
   head: () => ({
     meta: [
       { title: "Pilih Jalur Rahtawu, Tempur & Colo — Muria Trail" },

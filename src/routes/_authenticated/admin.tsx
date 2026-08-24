@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { ShieldCheck, QrCode, CalendarDays, Users, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { PhoneShell, ScreenHeader, LoadingBar } from "@/components/PhoneShell";
 import { JALUR, rupiah } from "@/data/muria";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, useIsAdmin } from "@/hooks/useAuth";
+import { validasiTiket as validasiTiketFn } from "@/lib/booking.functions";
 
-export const Route = createFileRoute("/admin")({
+export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
       { title: "Dashboard Basecamp — Muria Trail" },
@@ -51,6 +53,8 @@ function hariIniIso() {
 function Admin() {
   const { user, loading: loadingAuth } = useAuth();
   const { isAdmin, loading: loadingRole, setIsAdmin } = useIsAdmin(user?.id);
+  const validasiFn = useServerFn(validasiTiketFn);
+
 
   const [tanggal, setTanggal] = useState(hariIniIso());
   const [jalurId, setJalurId] = useState(JALUR[0].id);
@@ -113,24 +117,15 @@ function Admin() {
     toast.success("Status jalur diperbarui");
   };
 
-  const validasiTiket = async () => {
+  const cekTiket = async () => {
     const cari = kode.trim().toUpperCase();
     if (!cari) return;
-    const { data, error } = await supabase
-      .from("bookings")
-      .select("id,kode_booking,jalur_nama,jumlah_pendaki,status_pembayaran,checkin_at")
-      .eq("kode_booking", cari)
-      .maybeSingle();
-    if (error) return toast.error(error.message);
-    if (!data) return toast.error("Kode booking tidak ditemukan");
-    if (data.status_pembayaran !== "lunas") return toast.error("Tiket belum lunas");
-    if (data.checkin_at) return toast.info("Tiket ini sudah check-in sebelumnya");
-    const { error: errUp } = await supabase
-      .from("bookings")
-      .update({ checkin_at: new Date().toISOString(), status_pendakian: "berlangsung" })
-      .eq("id", data.id);
-    if (errUp) return toast.error(errUp.message);
-    toast.success(`Check-in berhasil — ${data.jalur_nama} (${data.jumlah_pendaki} orang)`);
+    const hasil = await validasiFn({ data: { kode: cari } });
+    if (!hasil.ok) {
+      toast.error(hasil.pesan);
+      return;
+    }
+    toast.success(hasil.pesan);
     setKode("");
     void muat();
   };
@@ -301,7 +296,7 @@ function Admin() {
               className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm uppercase"
             />
             <button
-              onClick={() => void validasiTiket()}
+              onClick={() => void cekTiket()}
               className="rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
             >
               Check-in

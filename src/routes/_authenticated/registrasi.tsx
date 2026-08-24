@@ -7,7 +7,7 @@ import { useAuth, useProfil } from "@/hooks/useAuth";
 import { useBookingDraft, simpanDraft, type Anggota } from "@/lib/booking-draft";
 import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute("/registrasi")({
+export const Route = createFileRoute("/_authenticated/registrasi")({
   head: () => ({
     meta: [
       { title: "Form Registrasi Pendaki — Muria Trail" },

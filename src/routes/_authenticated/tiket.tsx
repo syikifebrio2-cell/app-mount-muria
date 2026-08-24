@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { cacheTiket, tiketDariCache, type Booking } from "@/lib/booking";
 import { rupiah } from "@/data/muria";
 
-export const Route = createFileRoute("/tiket")({
+export const Route = createFileRoute("/_authenticated/tiket")({
   head: () => ({
     meta: [
       { title: "E-Tiket Pendakian — Muria Trail" },

@@ -14,7 +14,7 @@ import {
 import { PhoneShell, OfflineBadge } from "@/components/PhoneShell";
 import hero from "@/assets/hero-muria.jpg";
 
-export const Route = createFileRoute("/beranda")({
+export const Route = createFileRoute("/_authenticated/beranda")({
   head: () => ({
     meta: [
       { title: "Beranda Pendaki — Muria Trail" },
