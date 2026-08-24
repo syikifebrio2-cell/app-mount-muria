@@ -117,24 +117,15 @@ function Admin() {
     toast.success("Status jalur diperbarui");
   };
 
-  const validasiTiket = async () => {
+  const cekTiket = async () => {
     const cari = kode.trim().toUpperCase();
     if (!cari) return;
-    const { data, error } = await supabase
-      .from("bookings")
-      .select("id,kode_booking,jalur_nama,jumlah_pendaki,status_pembayaran,checkin_at")
-      .eq("kode_booking", cari)
-      .maybeSingle();
-    if (error) return toast.error(error.message);
-    if (!data) return toast.error("Kode booking tidak ditemukan");
-    if (data.status_pembayaran !== "lunas") return toast.error("Tiket belum lunas");
-    if (data.checkin_at) return toast.info("Tiket ini sudah check-in sebelumnya");
-    const { error: errUp } = await supabase
-      .from("bookings")
-      .update({ checkin_at: new Date().toISOString(), status_pendakian: "berlangsung" })
-      .eq("id", data.id);
-    if (errUp) return toast.error(errUp.message);
-    toast.success(`Check-in berhasil — ${data.jalur_nama} (${data.jumlah_pendaki} orang)`);
+    const hasil = await validasiFn({ data: { kode: cari } });
+    if (!hasil.ok) {
+      toast.error(hasil.pesan);
+      return;
+    }
+    toast.success(hasil.pesan);
     setKode("");
     void muat();
   };
