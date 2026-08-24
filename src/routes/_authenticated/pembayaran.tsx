@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { Wallet, Landmark, QrCode, ShieldCheck, Lock, Loader2, FlaskConical } from "lucide-react";
 import { toast } from "sonner";
 import { PhoneShell, ScreenHeader } from "@/components/PhoneShell";
 import { useAuth } from "@/hooks/useAuth";
 import { useBookingDraft, simpanDraft, hapusDraft } from "@/lib/booking-draft";
-import { bayarMock } from "@/lib/booking";
+import { buatBooking } from "@/lib/booking.functions";
 import { rupiah } from "@/data/muria";
 
-export const Route = createFileRoute("/pembayaran")({
+export const Route = createFileRoute("/_authenticated/pembayaran")({
   head: () => ({
     meta: [
       { title: "Ringkasan Biaya Retribusi & Simaksi — Muria Trail" },

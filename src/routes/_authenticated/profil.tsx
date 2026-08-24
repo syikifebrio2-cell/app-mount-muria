@@ -15,7 +15,7 @@ import { PhoneShell, ScreenHeader } from "@/components/PhoneShell";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/profil")({
+export const Route = createFileRoute("/_authenticated/profil")({
   head: () => ({
     meta: [
       { title: "Profil Pendaki — Muria Trail" },
