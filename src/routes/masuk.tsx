@@ -48,9 +48,27 @@ function Masuk() {
   const emailLogin = () =>
     via === "email" ? email.trim() : `${hp.replace(/\D/g, "")}@hp.muriatrail.app`;
 
+  function validasi() {
+    const e: Record<string, string> = {};
+    if (mode === "daftar" && nama.trim().length < 3) e.nama = "Nama minimal 3 huruf";
+    if (via === "email") {
+      if (!email.trim()) e.email = "Email wajib diisi";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim()))
+        e.email = "Format email belum benar";
+    } else {
+      const digit = hp.replace(/\D/g, "");
+      if (!digit) e.hp = "Nomor HP wajib diisi";
+      else if (!/^08\d{8,11}$/.test(digit)) e.hp = "Nomor HP harus diawali 08, 10–13 digit";
+    }
+    if (!sandi) e.sandi = "Kata sandi wajib diisi";
+    else if (sandi.length < 6) e.sandi = "Kata sandi minimal 6 karakter";
+    setGalat(e);
+    return Object.keys(e).length === 0;
+  }
+
   async function submit() {
-    if (!sandi || (via === "email" ? !email : !hp)) {
-      toast.error("Lengkapi data dulu ya");
+    if (!validasi()) {
+      toast.error("Periksa kembali data yang kamu isi");
       return;
     }
     setProses(true);
