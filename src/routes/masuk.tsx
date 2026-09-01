@@ -36,6 +36,7 @@ function Masuk() {
   const [hp, setHp] = useState("");
   const [sandi, setSandi] = useState("");
   const [proses, setProses] = useState(false);
+  const [galat, setGalat] = useState<Record<string, string>>({});
   const navigate = useNavigate();
   const { user, loading } = useAuth();
 
