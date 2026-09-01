@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import { ChevronLeft, Signal, Wifi, BatteryMedium } from "lucide-react";
 import { BottomNav } from "./BottomNav";
 
