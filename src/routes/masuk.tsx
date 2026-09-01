@@ -219,14 +219,6 @@ function Masuk() {
           </button>
         </form>
 
-        <button
-          onClick={submit}
-          disabled={proses}
-          className="mt-5 flex items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-sm font-bold text-primary-foreground shadow-card disabled:opacity-60"
-        >
-          {proses ? <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2} /> : null}
-          {mode === "masuk" ? "Masuk" : "Daftar sekarang"}
-        </button>
 
         <div className="my-5 flex items-center gap-3 text-[11px] text-muted-foreground">
           <span className="h-px flex-1 bg-border" /> atau <span className="h-px flex-1 bg-border" />
