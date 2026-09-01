@@ -54,7 +54,23 @@ const jalur = [
   },
 ];
 
+function salam() {
+  const jam = new Date().getHours();
+  if (jam < 11) return "Selamat pagi,";
+  if (jam < 15) return "Selamat siang,";
+  if (jam < 18) return "Selamat sore,";
+  return "Selamat malam,";
+}
+
 function Beranda() {
+  const { user } = useAuth();
+  const { profil, loading: memuatProfil } = useProfil(user?.id);
+  const nama =
+    profil?.nama_lengkap?.trim() ||
+    (user?.user_metadata?.nama_lengkap as string | undefined)?.trim() ||
+    user?.email?.split("@")[0] ||
+    "Pendaki";
+
   return (
     <PhoneShell nav>
       <div className="no-scrollbar flex-1 overflow-y-auto pb-6">
