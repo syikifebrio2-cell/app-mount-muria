@@ -145,13 +145,41 @@ function Masuk() {
         </div>
 
         <div className="mt-5 flex gap-2">
-          <TabPill active={via === "hp"} onClick={() => setVia("hp")} icon={Phone} label="Nomor HP" />
-          <TabPill active={via === "email"} onClick={() => setVia("email")} icon={Mail} label="Email" />
+          <TabPill
+            active={via === "hp"}
+            onClick={() => {
+              setVia("hp");
+              setGalat({});
+            }}
+            icon={Phone}
+            label="Nomor HP"
+          />
+          <TabPill
+            active={via === "email"}
+            onClick={() => {
+              setVia("email");
+              setGalat({});
+            }}
+            icon={Mail}
+            label="Email"
+          />
         </div>
 
-        <div className="mt-4 space-y-3">
+        <form
+          className="mt-4 space-y-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void submit();
+          }}
+        >
           {mode === "daftar" ? (
-            <Field label="Nama lengkap" placeholder="Nama sesuai KTP" value={nama} onChange={setNama} />
+            <Field
+              label="Nama lengkap"
+              placeholder="Nama sesuai KTP"
+              value={nama}
+              onChange={setNama}
+              error={galat.nama}
+            />
           ) : null}
           {via === "hp" ? (
             <Field
@@ -161,6 +189,7 @@ function Masuk() {
               value={hp}
               onChange={setHp}
               type="tel"
+              error={galat.hp}
             />
           ) : (
             <Field
@@ -169,6 +198,7 @@ function Masuk() {
               value={email}
               onChange={setEmail}
               type="email"
+              error={galat.email}
             />
           )}
           <Field
@@ -177,8 +207,17 @@ function Masuk() {
             value={sandi}
             onChange={setSandi}
             type="password"
+            error={galat.sandi}
           />
-        </div>
+          <button
+            type="submit"
+            disabled={proses}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-sm font-bold text-primary-foreground shadow-card disabled:opacity-60"
+          >
+            {proses ? <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2} /> : null}
+            {mode === "masuk" ? "Masuk" : "Daftar sekarang"}
+          </button>
+        </form>
 
         <button
           onClick={submit}
