@@ -36,6 +36,7 @@ function Masuk() {
   const [hp, setHp] = useState("");
   const [sandi, setSandi] = useState("");
   const [proses, setProses] = useState(false);
+  const [galat, setGalat] = useState<Record<string, string>>({});
   const navigate = useNavigate();
   const { user, loading } = useAuth();
 
@@ -47,9 +48,27 @@ function Masuk() {
   const emailLogin = () =>
     via === "email" ? email.trim() : `${hp.replace(/\D/g, "")}@hp.muriatrail.app`;
 
+  function validasi() {
+    const e: Record<string, string> = {};
+    if (mode === "daftar" && nama.trim().length < 3) e.nama = "Nama minimal 3 huruf";
+    if (via === "email") {
+      if (!email.trim()) e.email = "Email wajib diisi";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim()))
+        e.email = "Format email belum benar";
+    } else {
+      const digit = hp.replace(/\D/g, "");
+      if (!digit) e.hp = "Nomor HP wajib diisi";
+      else if (!/^08\d{8,11}$/.test(digit)) e.hp = "Nomor HP harus diawali 08, 10–13 digit";
+    }
+    if (!sandi) e.sandi = "Kata sandi wajib diisi";
+    else if (sandi.length < 6) e.sandi = "Kata sandi minimal 6 karakter";
+    setGalat(e);
+    return Object.keys(e).length === 0;
+  }
+
   async function submit() {
-    if (!sandi || (via === "email" ? !email : !hp)) {
-      toast.error("Lengkapi data dulu ya");
+    if (!validasi()) {
+      toast.error("Periksa kembali data yang kamu isi");
       return;
     }
     setProses(true);
@@ -111,7 +130,11 @@ function Masuk() {
           {(["masuk", "daftar"] as const).map((m) => (
             <button
               key={m}
-              onClick={() => setMode(m)}
+              type="button"
+              onClick={() => {
+                setMode(m);
+                setGalat({});
+              }}
               className={`rounded-xl py-2 text-xs font-bold capitalize transition-colors ${
                 mode === m ? "bg-card text-primary shadow-card" : "text-secondary-foreground/70"
               }`}
@@ -122,13 +145,41 @@ function Masuk() {
         </div>
 
         <div className="mt-5 flex gap-2">
-          <TabPill active={via === "hp"} onClick={() => setVia("hp")} icon={Phone} label="Nomor HP" />
-          <TabPill active={via === "email"} onClick={() => setVia("email")} icon={Mail} label="Email" />
+          <TabPill
+            active={via === "hp"}
+            onClick={() => {
+              setVia("hp");
+              setGalat({});
+            }}
+            icon={Phone}
+            label="Nomor HP"
+          />
+          <TabPill
+            active={via === "email"}
+            onClick={() => {
+              setVia("email");
+              setGalat({});
+            }}
+            icon={Mail}
+            label="Email"
+          />
         </div>
 
-        <div className="mt-4 space-y-3">
+        <form
+          className="mt-4 space-y-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void submit();
+          }}
+        >
           {mode === "daftar" ? (
-            <Field label="Nama lengkap" placeholder="Nama sesuai KTP" value={nama} onChange={setNama} />
+            <Field
+              label="Nama lengkap"
+              placeholder="Nama sesuai KTP"
+              value={nama}
+              onChange={setNama}
+              error={galat.nama}
+            />
           ) : null}
           {via === "hp" ? (
             <Field
@@ -138,6 +189,7 @@ function Masuk() {
               value={hp}
               onChange={setHp}
               type="tel"
+              error={galat.hp}
             />
           ) : (
             <Field
@@ -146,6 +198,7 @@ function Masuk() {
               value={email}
               onChange={setEmail}
               type="email"
+              error={galat.email}
             />
           )}
           <Field
@@ -154,17 +207,18 @@ function Masuk() {
             value={sandi}
             onChange={setSandi}
             type="password"
+            error={galat.sandi}
           />
-        </div>
+          <button
+            type="submit"
+            disabled={proses}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-sm font-bold text-primary-foreground shadow-card disabled:opacity-60"
+          >
+            {proses ? <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2} /> : null}
+            {mode === "masuk" ? "Masuk" : "Daftar sekarang"}
+          </button>
+        </form>
 
-        <button
-          onClick={submit}
-          disabled={proses}
-          className="mt-5 flex items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-sm font-bold text-primary-foreground shadow-card disabled:opacity-60"
-        >
-          {proses ? <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2} /> : null}
-          {mode === "masuk" ? "Masuk" : "Daftar sekarang"}
-        </button>
 
         <div className="my-5 flex items-center gap-3 text-[11px] text-muted-foreground">
           <span className="h-px flex-1 bg-border" /> atau <span className="h-px flex-1 bg-border" />
@@ -227,6 +281,7 @@ function Field({
   value,
   onChange,
   type = "text",
+  error,
 }: {
   label: string;
   placeholder: string;
@@ -234,11 +289,16 @@ function Field({
   value: string;
   onChange: (v: string) => void;
   type?: string;
+  error?: string;
 }) {
   return (
     <label className="block">
       <span className="text-[11px] font-semibold text-muted-foreground">{label}</span>
-      <div className="mt-1.5 flex items-center gap-2 rounded-2xl border border-input bg-card px-4 py-3 shadow-card focus-within:border-ring">
+      <div
+        className={`mt-1.5 flex items-center gap-2 rounded-2xl border bg-card px-4 py-3 shadow-card focus-within:border-ring ${
+          error ? "border-destructive" : "border-input"
+        }`}
+      >
         {prefix ? (
           <span className="shrink-0 border-r border-border pr-2 text-xs font-bold text-muted-foreground">
             {prefix}
@@ -249,9 +309,13 @@ function Field({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
+          aria-invalid={error ? true : undefined}
           className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
         />
       </div>
+      {error ? (
+        <span className="mt-1 block text-[10px] font-semibold text-destructive">{error}</span>
+      ) : null}
     </label>
   );
 }

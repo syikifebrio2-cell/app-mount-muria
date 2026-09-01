@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import { ChevronLeft, Signal, Wifi, BatteryMedium } from "lucide-react";
 import { BottomNav } from "./BottomNav";
 
@@ -62,16 +62,22 @@ export function ScreenHeader({
   back?: string;
   action?: ReactNode;
 }) {
+  const router = useRouter();
   return (
     <header className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-5 py-3">
       {back ? (
-        <Link
-          to={back}
+        <button
+          type="button"
+          onClick={() => {
+            // Utamakan riwayat browser agar tombol kembali terasa natural.
+            if (typeof window !== "undefined" && window.history.length > 1) router.history.back();
+            else router.navigate({ to: back });
+          }}
           aria-label="Kembali"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-card text-foreground"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-card text-foreground transition-colors active:bg-secondary"
         >
           <ChevronLeft className="h-4 w-4" strokeWidth={1.75} />
-        </Link>
+        </button>
       ) : (
         <span className="h-9 w-0" />
       )}

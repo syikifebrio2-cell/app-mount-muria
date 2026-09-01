@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2, Users, CalendarDays, MapPin, Loader2, Ticket } from "lucide-react";
+import { CheckCircle2, Users, CalendarDays, MapPin, Ticket } from "lucide-react";
 import { PhoneShell, ScreenHeader, OfflineBadge } from "@/components/PhoneShell";
+import { LoadingState, EmptyState, ErrorState } from "@/components/States";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { cacheTiket, tiketDariCache, type Booking } from "@/lib/booking";
@@ -77,26 +78,34 @@ function Tiket() {
         action={<OfflineBadge label={offline ? "Mode offline" : "Offline siap"} />}
       />
       <div className="no-scrollbar flex-1 overflow-y-auto px-5 pb-6">
-        {memuat && tiket.length === 0 ? (
-          <div className="flex items-center gap-2 rounded-2xl bg-secondary px-3 py-3 text-[11px] font-semibold text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin text-primary" /> Memuat tiket…
-          </div>
+        {memuat && tiket.length === 0 ? <LoadingState label="Memuat tiket…" /> : null}
+
+        {!memuat && offline && aktif.length === 0 ? (
+          <ErrorState
+            title="Tiket gagal dimuat"
+            body="Kami tidak bisa menghubungi server. Data offline juga belum tersedia."
+            onRetry={() => window.location.reload()}
+          />
         ) : null}
 
-        {!memuat && aktif.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-border bg-card p-6 text-center">
-            <Ticket className="mx-auto h-6 w-6 text-primary" strokeWidth={1.5} />
-            <p className="mt-2 text-sm font-bold">Belum ada tiket</p>
-            <p className="mt-1 text-[11px] text-muted-foreground">
-              {user ? "Pesan jalur & tanggal untuk membuat e-tiket." : "Masuk dulu untuk melihat tiketmu."}
-            </p>
-            <Link
-              to={user ? "/pesan" : "/masuk"}
-              className="mt-4 inline-flex rounded-2xl bg-primary px-5 py-3 text-xs font-bold text-primary-foreground"
-            >
-              {user ? "Pesan tiket" : "Masuk"}
-            </Link>
-          </div>
+        {!memuat && !offline && aktif.length === 0 ? (
+          <EmptyState
+            icon={Ticket}
+            title="Belum ada tiket"
+            body={
+              user
+                ? "Pesan jalur & tanggal untuk membuat e-tiket."
+                : "Masuk dulu untuk melihat tiketmu."
+            }
+            action={
+              <Link
+                to={user ? "/pesan" : "/masuk"}
+                className="inline-flex rounded-2xl bg-primary px-5 py-3 text-xs font-bold text-primary-foreground"
+              >
+                {user ? "Pesan tiket" : "Masuk"}
+              </Link>
+            }
+          />
         ) : null}
 
         {aktif.map((t) => (

@@ -13,6 +13,7 @@ import {
   WifiOff,
 } from "lucide-react";
 import { PhoneShell, ScreenHeader } from "@/components/PhoneShell";
+import { EmptyState } from "@/components/States";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, useProfil, useIsAdmin } from "@/hooks/useAuth";
 import { rupiah } from "@/data/muria";
@@ -128,8 +129,12 @@ function Profil() {
         <h2 className="mt-6 text-xs font-bold text-muted-foreground">RIWAYAT PENDAKIAN</h2>
         <ul className="mt-2.5 space-y-2">
           {riwayat.length === 0 && (
-            <li className="rounded-2xl border border-dashed border-border p-4 text-center text-xs text-muted-foreground">
-              Belum ada riwayat pendakian.
+            <li>
+              <EmptyState
+                icon={Mountain}
+                title="Belum ada riwayat"
+                body="Pendakian yang sudah kamu pesan akan tampil di sini."
+              />
             </li>
           )}
           {riwayat.map((r) => (

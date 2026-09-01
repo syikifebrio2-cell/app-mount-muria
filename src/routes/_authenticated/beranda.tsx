@@ -12,6 +12,7 @@ import {
   Landmark,
 } from "lucide-react";
 import { PhoneShell, OfflineBadge } from "@/components/PhoneShell";
+import { useAuth, useProfil } from "@/hooks/useAuth";
 import hero from "@/assets/hero-muria.jpg";
 
 export const Route = createFileRoute("/_authenticated/beranda")({
@@ -53,7 +54,23 @@ const jalur = [
   },
 ];
 
+function salam() {
+  const jam = new Date().getHours();
+  if (jam < 11) return "Selamat pagi,";
+  if (jam < 15) return "Selamat siang,";
+  if (jam < 18) return "Selamat sore,";
+  return "Selamat malam,";
+}
+
 function Beranda() {
+  const { user } = useAuth();
+  const { profil, loading: memuatProfil } = useProfil(user?.id);
+  const nama =
+    profil?.nama_lengkap?.trim() ||
+    (user?.user_metadata?.nama_lengkap as string | undefined)?.trim() ||
+    user?.email?.split("@")[0] ||
+    "Pendaki";
+
   return (
     <PhoneShell nav>
       <div className="no-scrollbar flex-1 overflow-y-auto pb-6">
@@ -68,8 +85,12 @@ function Beranda() {
           <div className="absolute inset-0 overlay-fog" />
           <div className="absolute inset-x-0 top-0 flex items-start justify-between px-5 pt-4">
             <div className="min-w-0">
-              <p className="text-[11px] text-primary-foreground/70">Selamat pagi,</p>
-              <p className="truncate text-base font-bold text-primary-foreground">Raka Wibowo</p>
+              <p className="text-[11px] text-primary-foreground/70">{salam()}</p>
+              {memuatProfil ? (
+                <span className="mt-1 block h-4 w-28 animate-pulse rounded bg-primary-foreground/25" />
+              ) : (
+                <p className="truncate text-base font-bold text-primary-foreground">{nama}</p>
+              )}
             </div>
             <button
               aria-label="Notifikasi"

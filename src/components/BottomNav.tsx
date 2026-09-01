@@ -12,14 +12,19 @@ export function BottomNav() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <nav className="sticky bottom-0 z-30 border-t border-border bg-card/95 px-2 pb-2 pt-1.5 backdrop-blur">
+    <nav
+      aria-label="Navigasi utama"
+      className="sticky bottom-0 z-30 border-t border-border bg-card/95 px-2 pt-1.5 backdrop-blur"
+      style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 0.5rem)" }}
+    >
       <ul className="grid grid-cols-4">
         {items.map(({ to, label, icon: Icon }) => {
-          const active = pathname === to;
+          const active = pathname === to || pathname.startsWith(`${to}/`);
           return (
-            <li key={to}>
+            <li key={to} className="min-w-0">
               <Link
                 to={to}
+                aria-current={active ? "page" : undefined}
                 className="flex flex-col items-center gap-1 rounded-xl py-1.5 transition-colors"
               >
                 <span
@@ -30,7 +35,7 @@ export function BottomNav() {
                   <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
                 </span>
                 <span
-                  className={`text-[10px] font-medium tracking-tight ${
+                  className={`max-w-full truncate px-1 text-[10px] font-medium tracking-tight ${
                     active ? "text-primary" : "text-muted-foreground"
                   }`}
                 >
