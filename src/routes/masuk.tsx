@@ -130,7 +130,11 @@ function Masuk() {
           {(["masuk", "daftar"] as const).map((m) => (
             <button
               key={m}
-              onClick={() => setMode(m)}
+              type="button"
+              onClick={() => {
+                setMode(m);
+                setGalat({});
+              }}
               className={`rounded-xl py-2 text-xs font-bold capitalize transition-colors ${
                 mode === m ? "bg-card text-primary shadow-card" : "text-secondary-foreground/70"
               }`}
