@@ -12,6 +12,7 @@ import {
   Landmark,
 } from "lucide-react";
 import { PhoneShell, OfflineBadge } from "@/components/PhoneShell";
+import { useAuth, useProfil } from "@/hooks/useAuth";
 import hero from "@/assets/hero-muria.jpg";
 
 export const Route = createFileRoute("/_authenticated/beranda")({
