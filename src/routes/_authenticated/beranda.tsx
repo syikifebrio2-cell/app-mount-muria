@@ -85,8 +85,12 @@ function Beranda() {
           <div className="absolute inset-0 overlay-fog" />
           <div className="absolute inset-x-0 top-0 flex items-start justify-between px-5 pt-4">
             <div className="min-w-0">
-              <p className="text-[11px] text-primary-foreground/70">Selamat pagi,</p>
-              <p className="truncate text-base font-bold text-primary-foreground">Raka Wibowo</p>
+              <p className="text-[11px] text-primary-foreground/70">{salam()}</p>
+              {memuatProfil ? (
+                <span className="mt-1 block h-4 w-28 animate-pulse rounded bg-primary-foreground/25" />
+              ) : (
+                <p className="truncate text-base font-bold text-primary-foreground">{nama}</p>
+              )}
             </div>
             <button
               aria-label="Notifikasi"
