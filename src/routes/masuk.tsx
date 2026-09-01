@@ -281,6 +281,7 @@ function Field({
   value,
   onChange,
   type = "text",
+  error,
 }: {
   label: string;
   placeholder: string;
@@ -288,11 +289,16 @@ function Field({
   value: string;
   onChange: (v: string) => void;
   type?: string;
+  error?: string;
 }) {
   return (
     <label className="block">
       <span className="text-[11px] font-semibold text-muted-foreground">{label}</span>
-      <div className="mt-1.5 flex items-center gap-2 rounded-2xl border border-input bg-card px-4 py-3 shadow-card focus-within:border-ring">
+      <div
+        className={`mt-1.5 flex items-center gap-2 rounded-2xl border bg-card px-4 py-3 shadow-card focus-within:border-ring ${
+          error ? "border-destructive" : "border-input"
+        }`}
+      >
         {prefix ? (
           <span className="shrink-0 border-r border-border pr-2 text-xs font-bold text-muted-foreground">
             {prefix}
@@ -303,9 +309,13 @@ function Field({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
+          aria-invalid={error ? true : undefined}
           className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
         />
       </div>
+      {error ? (
+        <span className="mt-1 block text-[10px] font-semibold text-destructive">{error}</span>
+      ) : null}
     </label>
   );
 }
