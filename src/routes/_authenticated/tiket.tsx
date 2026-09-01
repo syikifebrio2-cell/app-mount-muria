@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2, Users, CalendarDays, MapPin, Loader2, Ticket } from "lucide-react";
+import { CheckCircle2, Users, CalendarDays, MapPin, Ticket } from "lucide-react";
 import { PhoneShell, ScreenHeader, OfflineBadge } from "@/components/PhoneShell";
+import { LoadingState, EmptyState, ErrorState } from "@/components/States";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { cacheTiket, tiketDariCache, type Booking } from "@/lib/booking";
