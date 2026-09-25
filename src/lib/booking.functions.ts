@@ -157,6 +157,46 @@ export const buatBooking = createServerFn({ method: "POST" })
     return lunasRow as unknown as BookingResult;
   });
 
+const idSchema = z.object({ id: z.string().uuid() });
+
+/**
+ * Batalkan booking milik pengguna: hanya bila belum check-in & belum dibatalkan.
+ * Mengembalikan slot kuota harian.
+ */
+export const batalBooking = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => idSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { data: b, error } = await supabase
+      .from("bookings")
+      .select("id,user_id,jalur_id,tanggal_naik,jumlah_pendaki,status_pembayaran,checkin_at")
+      .eq("id", data.id)
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (error || !b) return { ok: false, pesan: "Booking tidak ditemukan" };
+    if (b.status_pembayaran === "batal") return { ok: false, pesan: "Booking sudah dibatalkan" };
+    if (b.checkin_at) return { ok: false, pesan: "Tiket sudah check-in, tidak bisa dibatalkan" };
+    const hariIni = new Date().toISOString().slice(0, 10);
+    if (b.tanggal_naik < hariIni) return { ok: false, pesan: "Tanggal pendakian sudah lewat" };
+
+    // Tandai batal dulu (kondisional) agar kuota tidak dikembalikan dua kali.
+    const { data: up, error: errUp } = await supabase
+      .from("bookings")
+      .update({ status_pembayaran: "batal", status_pendakian: "dibatalkan" })
+      .eq("id", b.id)
+      .neq("status_pembayaran", "batal")
+      .select("id");
+    if (errUp || !up?.length) return { ok: false, pesan: errUp?.message ?? "Gagal membatalkan" };
+
+    await supabase.rpc("batal_kuota", {
+      _jalur_id: b.jalur_id,
+      _tanggal: b.tanggal_naik,
+      _jumlah: b.jumlah_pendaki,
+    });
+    return { ok: true, pesan: "Booking dibatalkan, kuota dikembalikan" };
+  });
+
 const validasiSchema = z.object({ kode: z.string().min(1) });
 
 /**

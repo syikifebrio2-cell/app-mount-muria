@@ -154,6 +154,13 @@ function Tiket() {
                 <Fact icon={Users} label="Rombongan" value={`${t.jumlah_pendaki} pendaki`} />
                 <Fact icon={MapPin} label="Jalur" value={t.jalur_id.split("_")[0]} />
               </div>
+              <Link
+                to="/booking/$id"
+                params={{ id: t.id }}
+                className="block border-t border-border py-3 text-center text-xs font-bold text-primary"
+              >
+                Lihat detail & pembatalan
+              </Link>
             </div>
           </div>
         ))}
