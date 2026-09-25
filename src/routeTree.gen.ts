@@ -22,6 +22,7 @@ import { Route as AuthenticatedPesanRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedPembayaranRouteImport } from './routes/_authenticated/pembayaran'
 import { Route as AuthenticatedBerandaRouteImport } from './routes/_authenticated/beranda'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedBookingIdRouteImport } from './routes/_authenticated/booking.$id'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -87,6 +88,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedBookingIdRoute = AuthenticatedBookingIdRouteImport.update({
+  id: '/booking/$id',
+  path: '/booking/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/profil': typeof AuthenticatedProfilRoute
   '/registrasi': typeof AuthenticatedRegistrasiRoute
   '/tiket': typeof AuthenticatedTiketRoute
+  '/booking/$id': typeof AuthenticatedBookingIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/profil': typeof AuthenticatedProfilRoute
   '/registrasi': typeof AuthenticatedRegistrasiRoute
   '/tiket': typeof AuthenticatedTiketRoute
+  '/booking/$id': typeof AuthenticatedBookingIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/registrasi': typeof AuthenticatedRegistrasiRoute
   '/_authenticated/tiket': typeof AuthenticatedTiketRoute
+  '/_authenticated/booking/$id': typeof AuthenticatedBookingIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/profil'
     | '/registrasi'
     | '/tiket'
+    | '/booking/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -161,6 +171,7 @@ export interface FileRouteTypes {
     | '/profil'
     | '/registrasi'
     | '/tiket'
+    | '/booking/$id'
   id:
     | '__root__'
     | '/'
@@ -176,6 +187,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profil'
     | '/_authenticated/registrasi'
     | '/_authenticated/tiket'
+    | '/_authenticated/booking/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -280,6 +292,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/booking/$id': {
+      id: '/_authenticated/booking/$id'
+      path: '/booking/$id'
+      fullPath: '/booking/$id'
+      preLoaderRoute: typeof AuthenticatedBookingIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -291,6 +310,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedRegistrasiRoute: typeof AuthenticatedRegistrasiRoute
   AuthenticatedTiketRoute: typeof AuthenticatedTiketRoute
+  AuthenticatedBookingIdRoute: typeof AuthenticatedBookingIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -301,6 +321,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedRegistrasiRoute: AuthenticatedRegistrasiRoute,
   AuthenticatedTiketRoute: AuthenticatedTiketRoute,
+  AuthenticatedBookingIdRoute: AuthenticatedBookingIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
