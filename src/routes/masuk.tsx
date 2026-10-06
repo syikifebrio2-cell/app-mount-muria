@@ -6,6 +6,7 @@ import { PhoneShell } from "@/components/PhoneShell";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import logo from "@/assets/logo-muria.png";
+import { konfirmasiAkunHp } from "@/lib/auth.functions";
 
 export const Route = createFileRoute("/masuk")({
   head: () => ({
@@ -85,10 +86,14 @@ function Masuk() {
         if (error) throw error;
         toast.success("Akun dibuat. Selamat datang, pendaki!");
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        let { error } = await supabase.auth.signInWithPassword({
           email: emailLogin(),
           password: sandi,
         });
+        if (error && error.message.includes("not confirmed") && emailLogin().endsWith("@hp.muriatrail.app")) {
+          await konfirmasiAkunHp({ data: { email: emailLogin() } });
+          ({ error } = await supabase.auth.signInWithPassword({ email: emailLogin(), password: sandi }));
+        }
         if (error) throw error;
         toast.success("Berhasil masuk");
       }
