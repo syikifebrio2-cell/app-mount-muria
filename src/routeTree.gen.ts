@@ -9,38 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as JalurRouteImport } from './routes/jalur'
-import { Route as MasukRouteImport } from './routes/masuk'
-import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
-import { Route as AuthenticatedBerandaRouteImport } from './routes/_authenticated/beranda'
-import { Route as AuthenticatedPembayaranRouteImport } from './routes/_authenticated/pembayaran'
-import { Route as AuthenticatedPesanRouteImport } from './routes/_authenticated/pesan'
-import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
-import { Route as AuthenticatedRegistrasiRouteImport } from './routes/_authenticated/registrasi'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as MasukRouteImport } from './routes/masuk'
+import { Route as JalurRouteImport } from './routes/jalur'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedTiketRouteImport } from './routes/_authenticated/tiket'
+import { Route as AuthenticatedRegistrasiRouteImport } from './routes/_authenticated/registrasi'
+import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
+import { Route as AuthenticatedPesanRouteImport } from './routes/_authenticated/pesan'
+import { Route as AuthenticatedPembayaranRouteImport } from './routes/_authenticated/pembayaran'
+import { Route as AuthenticatedBerandaRouteImport } from './routes/_authenticated/beranda'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedBookingIdRouteImport } from './routes/_authenticated/booking.$id'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const JalurRoute = JalurRouteImport.update({
-  id: '/jalur',
-  path: '/jalur',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MasukRoute = MasukRouteImport.update({
-  id: '/masuk',
-  path: '/masuk',
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -48,34 +34,28 @@ const OnboardingRoute = OnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
+const MasukRoute = MasukRouteImport.update({
+  id: '/masuk',
+  path: '/masuk',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const JalurRoute = JalurRouteImport.update({
+  id: '/jalur',
+  path: '/jalur',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedBerandaRoute = AuthenticatedBerandaRouteImport.update({
-  id: '/beranda',
-  path: '/beranda',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedPembayaranRoute = AuthenticatedPembayaranRouteImport.update({
-  id: '/pembayaran',
-  path: '/pembayaran',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedPesanRoute = AuthenticatedPesanRouteImport.update({
-  id: '/pesan',
-  path: '/pesan',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
-  id: '/profil',
-  path: '/profil',
+const AuthenticatedTiketRoute = AuthenticatedTiketRouteImport.update({
+  id: '/tiket',
+  path: '/tiket',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedRegistrasiRoute = AuthenticatedRegistrasiRouteImport.update({
@@ -83,9 +63,29 @@ const AuthenticatedRegistrasiRoute = AuthenticatedRegistrasiRouteImport.update({
   path: '/registrasi',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedTiketRoute = AuthenticatedTiketRouteImport.update({
-  id: '/tiket',
-  path: '/tiket',
+const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPesanRoute = AuthenticatedPesanRouteImport.update({
+  id: '/pesan',
+  path: '/pesan',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPembayaranRoute = AuthenticatedPembayaranRouteImport.update({
+  id: '/pembayaran',
+  path: '/pembayaran',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedBerandaRoute = AuthenticatedBerandaRouteImport.update({
+  id: '/beranda',
+  path: '/beranda',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedBookingIdRoute = AuthenticatedBookingIdRouteImport.update({
@@ -201,32 +201,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/jalur': {
-      id: '/jalur'
-      path: '/jalur'
-      fullPath: '/jalur'
-      preLoaderRoute: typeof JalurRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/masuk': {
-      id: '/masuk'
-      path: '/masuk'
-      fullPath: '/masuk'
-      preLoaderRoute: typeof MasukRouteImport
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -236,46 +215,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
+    '/masuk': {
+      id: '/masuk'
+      path: '/masuk'
+      fullPath: '/masuk'
+      preLoaderRoute: typeof MasukRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/jalur': {
+      id: '/jalur'
+      path: '/jalur'
+      fullPath: '/jalur'
+      preLoaderRoute: typeof JalurRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/beranda': {
-      id: '/_authenticated/beranda'
-      path: '/beranda'
-      fullPath: '/beranda'
-      preLoaderRoute: typeof AuthenticatedBerandaRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/pembayaran': {
-      id: '/_authenticated/pembayaran'
-      path: '/pembayaran'
-      fullPath: '/pembayaran'
-      preLoaderRoute: typeof AuthenticatedPembayaranRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/pesan': {
-      id: '/_authenticated/pesan'
-      path: '/pesan'
-      fullPath: '/pesan'
-      preLoaderRoute: typeof AuthenticatedPesanRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/profil': {
-      id: '/_authenticated/profil'
-      path: '/profil'
-      fullPath: '/profil'
-      preLoaderRoute: typeof AuthenticatedProfilRouteImport
+    '/_authenticated/tiket': {
+      id: '/_authenticated/tiket'
+      path: '/tiket'
+      fullPath: '/tiket'
+      preLoaderRoute: typeof AuthenticatedTiketRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/registrasi': {
@@ -285,11 +257,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRegistrasiRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/tiket': {
-      id: '/_authenticated/tiket'
-      path: '/tiket'
-      fullPath: '/tiket'
-      preLoaderRoute: typeof AuthenticatedTiketRouteImport
+    '/_authenticated/profil': {
+      id: '/_authenticated/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof AuthenticatedProfilRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/pesan': {
+      id: '/_authenticated/pesan'
+      path: '/pesan'
+      fullPath: '/pesan'
+      preLoaderRoute: typeof AuthenticatedPesanRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/pembayaran': {
+      id: '/_authenticated/pembayaran'
+      path: '/pembayaran'
+      fullPath: '/pembayaran'
+      preLoaderRoute: typeof AuthenticatedPembayaranRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/beranda': {
+      id: '/_authenticated/beranda'
+      path: '/beranda'
+      fullPath: '/beranda'
+      preLoaderRoute: typeof AuthenticatedBerandaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/booking/$id': {
