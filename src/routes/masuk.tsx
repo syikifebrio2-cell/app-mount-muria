@@ -73,11 +73,13 @@ function Masuk() {
       return;
     }
     setProses(true);
+    // Spasi di awal/akhir sering ikut saat menyalin sandi — abaikan.
+    const sandiBersih = sandi.trim();
     try {
       if (mode === "daftar") {
         const { error } = await supabase.auth.signUp({
           email: emailLogin(),
-          password: sandi,
+          password: sandiBersih,
           options: {
             emailRedirectTo: `${window.location.origin}/beranda`,
             data: { nama_lengkap: nama, no_hp: hp },
@@ -88,11 +90,11 @@ function Masuk() {
       } else {
         let { error } = await supabase.auth.signInWithPassword({
           email: emailLogin(),
-          password: sandi,
+          password: sandiBersih,
         });
         if (error && error.message.includes("not confirmed") && emailLogin().endsWith("@hp.muriatrail.app")) {
           await konfirmasiAkunHp({ data: { email: emailLogin() } });
-          ({ error } = await supabase.auth.signInWithPassword({ email: emailLogin(), password: sandi }));
+          ({ error } = await supabase.auth.signInWithPassword({ email: emailLogin(), password: sandiBersih }));
         }
         if (error) throw error;
         toast.success("Berhasil masuk");
