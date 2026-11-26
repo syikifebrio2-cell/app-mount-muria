@@ -1,0 +1,23 @@
+# Muria Trail - AI Coding & Architecture Rules
+
+You are working on Muria Trail, an adventure hiking booking & safety mobile application for Mount Muria, Central Java.
+Stack: React 19, TypeScript, Tailwind CSS v4, TanStack Router, Supabase, Capacitor.
+
+## Critical Project Guardrails:
+1. **Lovable Sync & Git Safety**:
+   - This project is synced with Lovable. NEVER run or suggest `git push --force` or `git rebase` on published commits.
+   - Keep commits modular, descriptive, and atomic.
+
+2. **Mobile-First & Native Ready**:
+   - All components must be built for mobile screens first, touch-friendly (minimum 44px tap targets).
+   - Use safe-area insets (`env(safe-area-inset-top)` and `env(safe-area-inset-bottom)`) so UI is not obscured by camera cutouts or home gesture bars.
+   - Avoid desktop-only wrappers or fake status bars inside mobile components.
+
+3. **Offline-First for Mountain Conditions**:
+   - Hikers on Mount Muria (Rahtawu, Tempur, Natas Angin, Puncak 29) experience low or zero cellular signal.
+   - Critical data (E-Tickets, Trail Safety, Packing Checklist, Emergency SOS coordinates) MUST have offline fallback (localStorage / cached state).
+
+4. **Design & Brand Identity**:
+   - Palette: Deep forest green, earthy browns, sunrise orange accents, high-contrast emergency alerts.
+   - Icons: Lucide React (`lucide-react`).
+   - Toasts: Sonner (`sonner`).

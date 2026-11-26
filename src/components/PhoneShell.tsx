@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
 import { useRouter } from "@tanstack/react-router";
-import { ChevronLeft, Signal, Wifi, BatteryMedium } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { BottomNav } from "./BottomNav";
 
 /**
- * Mobile device shell. Every screen renders inside this frame so the
- * prototype reads as an app, not a website.
+ * Mobile application shell.
+ * Renders full-bleed on mobile devices with native safe-area insets,
+ * and neatly centered on desktop/tablet screens.
  */
 export function PhoneShell({
   children,
@@ -19,33 +20,27 @@ export function PhoneShell({
   statusBarLight?: boolean;
 }) {
   return (
-    <div className="flex min-h-screen justify-center bg-muted p-0 sm:p-6">
-      <div
-        className={`relative flex w-full max-w-[420px] flex-col overflow-hidden shadow-lifted sm:rounded-[2.5rem] sm:border-8 sm:border-primary-deep ${
-          dark ? "bg-primary-deep" : "bg-background"
-        }`}
-        style={{ minHeight: "min(100vh, 880px)" }}
-      >
-        <StatusBar light={statusBarLight || dark} />
-        <div className="flex min-h-0 flex-1 flex-col">{children}</div>
-        {nav ? <BottomNav /> : null}
-      </div>
-    </div>
-  );
-}
-
-function StatusBar({ light }: { light?: boolean }) {
-  return (
     <div
-      className={`flex items-center justify-between px-6 pb-1 pt-3 text-[11px] font-semibold ${
-        light ? "text-primary-foreground" : "text-foreground"
+      className={`min-h-screen w-full flex justify-center ${
+        dark ? "bg-primary-deep" : "bg-background"
       }`}
     >
-      <span>05:12</span>
-      <div className="flex items-center gap-1.5 opacity-80">
-        <Signal className="h-3.5 w-3.5" strokeWidth={2} />
-        <Wifi className="h-3.5 w-3.5" strokeWidth={2} />
-        <BatteryMedium className="h-4 w-4" strokeWidth={2} />
+      <div
+        className={`relative flex w-full max-w-md flex-col min-h-screen ${
+          dark ? "bg-primary-deep text-primary-foreground" : "bg-background text-foreground"
+        }`}
+      >
+        {/* Top Safe Area Inset for Notches / Dynamic Island */}
+        <div
+          className="w-full shrink-0"
+          style={{ height: "env(safe-area-inset-top, 0px)" }}
+        />
+
+        {/* Main Content Area */}
+        <main className="flex min-h-0 flex-1 flex-col">{children}</main>
+
+        {/* Bottom Navigation */}
+        {nav ? <BottomNav /> : null}
       </div>
     </div>
   );
@@ -64,7 +59,7 @@ export function ScreenHeader({
 }) {
   const router = useRouter();
   return (
-    <header className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-5 py-3">
+    <header className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3">
       {back ? (
         <button
           type="button"

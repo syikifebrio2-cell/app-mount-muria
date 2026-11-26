@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Bell,
@@ -10,8 +11,13 @@ import {
   TriangleAlert,
   Mountain,
   Landmark,
+  ShieldAlert,
+  CheckSquare,
+  Navigation,
 } from "lucide-react";
 import { PhoneShell, OfflineBadge } from "@/components/PhoneShell";
+import { EmergencySosModal } from "@/components/EmergencySosModal";
+import { PackingChecklistModal } from "@/components/PackingChecklistModal";
 import { useAuth, useProfil } from "@/hooks/useAuth";
 import hero from "@/assets/hero-muria.jpg";
 
@@ -65,6 +71,9 @@ function salam() {
 function Beranda() {
   const { user } = useAuth();
   const { profil, loading: memuatProfil } = useProfil(user?.id);
+  const [sosBuka, setSosBuka] = useState(false);
+  const [checklistBuka, setChecklistBuka] = useState(false);
+
   const nama =
     profil?.nama_lengkap?.trim() ||
     (user?.user_metadata?.nama_lengkap as string | undefined)?.trim() ||
@@ -92,13 +101,21 @@ function Beranda() {
                 <p className="truncate text-base font-bold text-primary-foreground">{nama}</p>
               )}
             </div>
-            <button
-              aria-label="Notifikasi"
-              className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-foreground/15 text-primary-foreground backdrop-blur"
-            >
-              <Bell className="h-4 w-4" strokeWidth={1.75} />
-              <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-accent" />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSosBuka(true)}
+                className="flex items-center gap-1 rounded-full bg-destructive px-2.5 py-1 text-[11px] font-extrabold text-destructive-foreground shadow-sm animate-pulse active:scale-95 transition-transform"
+              >
+                <ShieldAlert className="h-3.5 w-3.5" /> SOS
+              </button>
+              <button
+                aria-label="Notifikasi"
+                className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-foreground/15 text-primary-foreground backdrop-blur"
+              >
+                <Bell className="h-4 w-4" strokeWidth={1.75} />
+                <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-accent" />
+              </button>
+            </div>
           </div>
           <div className="absolute inset-x-5 bottom-4">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/90 px-2.5 py-1 text-[10px] font-bold text-accent-foreground">
@@ -114,6 +131,43 @@ function Beranda() {
         </div>
 
         <div className="space-y-4 px-5 pt-4">
+          {/* Fitur Lapangan & Keamanan (SOS, Checklist, Navigasi) */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                Alat Lapangan & Keamanan
+              </h3>
+            </div>
+            <div className="grid grid-cols-2 gap-2.5">
+              <button
+                onClick={() => setSosBuka(true)}
+                className="flex flex-col items-start rounded-2xl border border-destructive/30 bg-destructive/8 p-3 text-left transition-all active:scale-[0.98] shadow-sm"
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-destructive text-destructive-foreground shadow-sm mb-2">
+                  <ShieldAlert className="h-4 w-4" />
+                </div>
+                <span className="text-xs font-extrabold text-destructive">Tombol Darurat SOS</span>
+                <span className="text-[10px] text-muted-foreground mt-0.5">
+                  GPS Offline & SMS SAR
+                </span>
+              </button>
+
+              <button
+                onClick={() => setChecklistBuka(true)}
+                className="flex flex-col items-start rounded-2xl border border-primary/30 bg-primary/8 p-3 text-left transition-all active:scale-[0.98] shadow-sm"
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm mb-2">
+                  <CheckSquare className="h-4 w-4" />
+                </div>
+                <span className="text-xs font-extrabold text-primary">Checklist Barang</span>
+                <span className="text-[10px] text-muted-foreground mt-0.5">
+                  Cek bawaan mendaki
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Cuaca Puncak */}
           <div className="rounded-3xl border border-border bg-card p-4 shadow-card">
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
               <div className="min-w-0">
@@ -145,6 +199,7 @@ function Beranda() {
             </p>
           </div>
 
+          {/* Kuota & Tiket */}
           <div className="surface-summit rounded-3xl p-4 text-primary-foreground shadow-lifted">
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
               <div className="min-w-0">
@@ -168,6 +223,7 @@ function Beranda() {
             </Link>
           </div>
 
+          {/* Jalur Pendakian */}
           <div>
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold">Jalur pendakian</h3>
@@ -206,6 +262,38 @@ function Beranda() {
             </ul>
           </div>
 
+          {/* Navigasi Petunjuk Arah ke Basecamp */}
+          <div className="rounded-2xl border border-border bg-card p-3.5 shadow-card">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Navigation className="h-4 w-4 text-accent" />
+                <h4 className="text-xs font-bold">Rute Google Maps ke Basecamp</h4>
+              </div>
+            </div>
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              Petunjuk arah langsung ke pos registrasi resmi:
+            </p>
+            <div className="mt-2.5 grid grid-cols-2 gap-2">
+              <a
+                href="https://www.google.com/maps/dir/?api=1&destination=-6.671375,110.887222"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center gap-1.5 rounded-xl border border-border bg-secondary py-2 text-[11px] font-bold text-foreground active:bg-secondary/80"
+              >
+                Basecamp Rahtawu
+              </a>
+              <a
+                href="https://www.google.com/maps/dir/?api=1&destination=-6.661139,110.906944"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center gap-1.5 rounded-xl border border-border bg-secondary py-2 text-[11px] font-bold text-foreground active:bg-secondary/80"
+              >
+                Basecamp Colo
+              </a>
+            </div>
+          </div>
+
+          {/* Wisata Religi */}
           <div>
             <h3 className="text-sm font-bold">Wisata religi</h3>
             <Link
@@ -229,14 +317,25 @@ function Beranda() {
             </Link>
           </div>
 
-
-
           <div className="flex items-center justify-between rounded-2xl border border-dashed border-border px-3 py-2.5">
             <OfflineBadge label="Data jalur tersimpan offline" />
             <span className="text-[10px] text-muted-foreground">Sinkron 05.07 WIB</span>
           </div>
         </div>
       </div>
+
+      {/* Modal SOS Darurat */}
+      <EmergencySosModal
+        isOpen={sosBuka}
+        onClose={() => setSosBuka(false)}
+        namaPendaki={nama}
+      />
+
+      {/* Modal Checklist Perlengkapan */}
+      <PackingChecklistModal
+        isOpen={checklistBuka}
+        onClose={() => setChecklistBuka(false)}
+      />
     </PhoneShell>
   );
 }

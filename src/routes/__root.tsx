@@ -79,7 +79,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      {
+        name: "viewport",
+        content:
+          "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+      },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "theme-color", content: "#1B4332" },
       { title: "Muria Trail — Tiket & Registrasi Pendakian Gunung Muria" },
       {
         name: "description",
@@ -91,10 +99,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { property: "og:title", content: "Muria Trail — Tiket & Registrasi Pendakian Gunung Muria" },
       { name: "twitter:title", content: "Muria Trail — Tiket & Registrasi Pendakian Gunung Muria" },
-      { property: "og:description", content: "Pesan tiket pendakian Gunung Muria, Jepara: registrasi pendaki, kuota harian, info jalur Colo & Rahtawu, cuaca real-time, dan e-tiket QR offline." },
-      { name: "twitter:description", content: "Pesan tiket pendakian Gunung Muria, Jepara: registrasi pendaki, kuota harian, info jalur Colo & Rahtawu, cuaca real-time, dan e-tiket QR offline." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2c802fa9-9c1a-4377-b17a-c5310b3d04b7/id-preview-934dbeaf--b2d4a9dc-7da5-4f2c-816f-c65a53828d35.lovable.app-1785208156767.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2c802fa9-9c1a-4377-b17a-c5310b3d04b7/id-preview-934dbeaf--b2d4a9dc-7da5-4f2c-816f-c65a53828d35.lovable.app-1785208156767.png" },
+      {
+        property: "og:description",
+        content:
+          "Pesan tiket pendakian Gunung Muria, Jepara: registrasi pendaki, kuota harian, info jalur Colo & Rahtawu, cuaca real-time, dan e-tiket QR offline.",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Pesan tiket pendakian Gunung Muria, Jepara: registrasi pendaki, kuota harian, info jalur Colo & Rahtawu, cuaca real-time, dan e-tiket QR offline.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2c802fa9-9c1a-4377-b17a-c5310b3d04b7/id-preview-934dbeaf--b2d4a9dc-7da5-4f2c-816f-c65a53828d35.lovable.app-1785208156767.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2c802fa9-9c1a-4377-b17a-c5310b3d04b7/id-preview-934dbeaf--b2d4a9dc-7da5-4f2c-816f-c65a53828d35.lovable.app-1785208156767.png",
+      },
     ],
     links: [
       {
@@ -119,7 +143,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="id">
       <head>
         <HeadContent />
       </head>

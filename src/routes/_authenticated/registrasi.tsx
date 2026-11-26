@@ -1,6 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Minus, Plus, ArrowRight } from "lucide-react";
+import {
+  Minus,
+  Plus,
+  ArrowRight,
+  Camera,
+  Upload,
+  CheckCircle2,
+  Trash2,
+  FileCheck,
+  ShieldCheck,
+} from "lucide-react";
 import { toast } from "sonner";
 import { PhoneShell, ScreenHeader } from "@/components/PhoneShell";
 import { useAuth, useProfil } from "@/hooks/useAuth";
@@ -14,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/registrasi")({
       {
         name: "description",
         content:
-          "Isi data diri pendaki: nama, NIK, kontak darurat, golongan darah, jumlah rombongan, serta data anggota rombongan.",
+          "Isi data diri pendaki: nama, NIK, kontak darurat, golongan darah, jumlah rombongan, serta dokumen wajib pendakian Gunung Muria.",
       },
       { property: "og:title", content: "Form Registrasi Pendaki — Muria Trail" },
       {
@@ -41,6 +51,12 @@ function Registrasi() {
   const [jumlah, setJumlah] = useState(draft.jumlah_pendaki || 1);
   const [setuju, setSetuju] = useState(true);
 
+  // State Dokumen Pendaki
+  const [fotoKtp, setFotoKtp] = useState<string | null>(null);
+  const [fotoSuratSehat, setFotoSuratSehat] = useState<string | null>(null);
+  const fileInputKtpRef = useRef<HTMLInputElement>(null);
+  const fileInputSehatRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     if (!profil) return;
     setKetua((k) => ({
@@ -63,6 +79,26 @@ function Registrasi() {
       return next;
     });
   }, [jumlah]);
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>, tipe: "ktp" | "sehat") {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Ukuran file maksimal 5MB");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (tipe === "ktp") {
+        setFotoKtp(reader.result as string);
+        toast.success("Foto KTP berhasil dipilih!");
+      } else {
+        setFotoSuratSehat(reader.result as string);
+        toast.success("Surat Keterangan Sehat berhasil dipilih!");
+      }
+    };
+    reader.readAsDataURL(file);
+  }
 
   async function lanjut() {
     if (!ketua.nama.trim() || !ketua.no_hp?.trim()) {
@@ -159,6 +195,107 @@ function Registrasi() {
           </div>
         </div>
 
+        {/* UPLOAD DOKUMEN IDENTITAS & KESEHATAN */}
+        <SectionTitle className="mt-6">DOKUMEN WAJIB PENDAKIAN</SectionTitle>
+        <p className="mt-1 text-[11px] text-muted-foreground">
+          SOP Balai Pengelola: Foto identitas asli & surat keterangan sehat.
+        </p>
+
+        <div className="mt-2.5 space-y-3">
+          {/* Box Upload KTP */}
+          <div className="rounded-2xl border border-border bg-card p-3.5 shadow-card">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-bold flex items-center gap-1.5">
+                <FileCheck className="h-4 w-4 text-primary" /> Foto KTP / Kartu Identitas
+              </span>
+              {fotoKtp && (
+                <span className="flex items-center gap-1 text-[10px] font-bold text-success">
+                  <CheckCircle2 className="h-3.5 w-3.5" /> Terunggah
+                </span>
+              )}
+            </div>
+
+            {fotoKtp ? (
+              <div className="relative rounded-xl overflow-hidden border border-border">
+                <img src={fotoKtp} alt="Preview KTP" className="h-28 w-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => setFotoKtp(null)}
+                  className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-destructive text-white shadow-sm"
+                  title="Hapus foto"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ) : (
+              <div
+                onClick={() => fileInputKtpRef.current?.click()}
+                className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-4 px-3 cursor-pointer hover:bg-secondary/40 active:bg-secondary transition-colors"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary mb-1.5">
+                  <Camera className="h-5 w-5" />
+                </div>
+                <p className="text-xs font-bold text-foreground">Ambil Foto / Pilih Berkas KTP</p>
+                <p className="text-[10px] text-muted-foreground">JPG, PNG (Maks. 5MB)</p>
+              </div>
+            )}
+            <input
+              ref={fileInputKtpRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => handleFileSelect(e, "ktp")}
+            />
+          </div>
+
+          {/* Box Upload Surat Sehat */}
+          <div className="rounded-2xl border border-border bg-card p-3.5 shadow-card">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-bold flex items-center gap-1.5">
+                <ShieldCheck className="h-4 w-4 text-accent" /> Surat Keterangan Sehat Puskesmas
+              </span>
+              {fotoSuratSehat && (
+                <span className="flex items-center gap-1 text-[10px] font-bold text-success">
+                  <CheckCircle2 className="h-3.5 w-3.5" /> Terunggah
+                </span>
+              )}
+            </div>
+
+            {fotoSuratSehat ? (
+              <div className="relative rounded-xl overflow-hidden border border-border">
+                <img src={fotoSuratSehat} alt="Preview Surat Sehat" className="h-28 w-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => setFotoSuratSehat(null)}
+                  className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-destructive text-white shadow-sm"
+                  title="Hapus foto"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ) : (
+              <div
+                onClick={() => fileInputSehatRef.current?.click()}
+                className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-4 px-3 cursor-pointer hover:bg-secondary/40 active:bg-secondary transition-colors"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent mb-1.5">
+                  <Upload className="h-5 w-5" />
+                </div>
+                <p className="text-xs font-bold text-foreground">Upload Surat Sehat (Opsional)</p>
+                <p className="text-[10px] text-muted-foreground">Bisa ditunjukkan fisik saat di basecamp</p>
+              </div>
+            )}
+            <input
+              ref={fileInputSehatRef}
+              type="file"
+              accept="image/*,application/pdf"
+              className="hidden"
+              onChange={(e) => handleFileSelect(e, "sehat")}
+            />
+          </div>
+        </div>
+
+        {/* JUMLAH ANGGOTA ROMBONGAN */}
         <SectionTitle className="mt-6">JUMLAH ANGGOTA ROMBONGAN</SectionTitle>
         <div className="mt-2.5 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-border bg-card p-3.5 shadow-card">
           <div className="min-w-0">

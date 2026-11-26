@@ -1,6 +1,18 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2, Users, CalendarDays, MapPin, Ticket } from "lucide-react";
+import {
+  CheckCircle2,
+  Users,
+  CalendarDays,
+  MapPin,
+  Ticket,
+  Share2,
+  Copy,
+  Check,
+  ShieldCheck,
+  Smartphone,
+} from "lucide-react";
+import { toast } from "sonner";
 import { PhoneShell, ScreenHeader, OfflineBadge } from "@/components/PhoneShell";
 import { LoadingState, EmptyState, ErrorState } from "@/components/States";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,6 +53,7 @@ function Tiket() {
   const [tiket, setTiket] = useState<Booking[]>([]);
   const [memuat, setMemuat] = useState(true);
   const [offline, setOffline] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   useEffect(() => {
     setTiket(tiketDariCache());
@@ -69,6 +82,29 @@ function Tiket() {
   }, [user, loading]);
 
   const aktif = tiket.filter((t) => t.status_pembayaran === "lunas");
+
+  function salinKode(kode: string, id: string) {
+    navigator.clipboard.writeText(kode);
+    setCopiedId(id);
+    toast.success(`Kode ${kode} disalin ke clipboard!`);
+    setTimeout(() => setCopiedId(null), 2000);
+  }
+
+  function bagikanKeWhatsApp(t: Booking) {
+    const pesan = `🏔️ *E-TIKET RESMI PENDAKIAN GUNUNG MURIA*\n` +
+      `----------------------------------------\n` +
+      `🎫 *Kode Booking:* ${t.kode_booking}\n` +
+      `📍 *Jalur:* ${t.jalur_nama}\n` +
+      `📅 *Tanggal Naik:* ${t.tanggal_naik}\n` +
+      `👥 *Rombongan:* ${t.jumlah_pendaki} Orang\n` +
+      `✅ *Status:* Lunas & Terverifikasi\n` +
+      `----------------------------------------\n` +
+      `Harap simpan pesan ini atau tunjukkan QR di aplikasi Muria Trail saat tiba di Basecamp.\n` +
+      `Jaga kelestarian alam & bawa turun sampahmu!`;
+
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(pesan)}`;
+    window.open(waUrl, "_blank");
+  }
 
   return (
     <PhoneShell nav>
@@ -117,7 +153,7 @@ function Tiket() {
               </p>
             </div>
 
-            <div className="mt-3 overflow-hidden rounded-3xl bg-card shadow-lifted">
+            <div className="mt-3 overflow-hidden rounded-3xl bg-card shadow-lifted border border-border">
               <div className="surface-summit px-4 py-3.5 text-primary-foreground">
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
                   <div className="min-w-0">
@@ -133,19 +169,38 @@ function Tiket() {
               </div>
 
               <div className="flex flex-col items-center px-4 py-5">
-                <div className="rounded-2xl border border-border bg-background p-3">
+                <div className="rounded-2xl border border-border bg-background p-3 shadow-inner">
                   <QrPlaceholder seed={t.kode_booking} />
                 </div>
                 <p className="mt-3 text-[11px] text-muted-foreground">Kode booking</p>
-                <p className="text-lg font-extrabold tracking-[0.2em]">{t.kode_booking}</p>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <p className="text-xl font-extrabold tracking-[0.2em] font-mono">{t.kode_booking}</p>
+                  <button
+                    onClick={() => salinKode(t.kode_booking, t.id)}
+                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-secondary text-primary active:scale-95"
+                    title="Salin kode booking"
+                  >
+                    {copiedId === t.id ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
                 <p className="mt-1 text-[10px] text-muted-foreground">
                   Tunjukkan QR ini di pos registrasi basecamp · {rupiah(t.total_biaya)}
                 </p>
               </div>
 
+              {/* Tombol Aksi Mobile (Bagikan ke WhatsApp Rombongan) */}
+              <div className="px-4 pb-4">
+                <button
+                  onClick={() => bagikanKeWhatsApp(t)}
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 py-3 text-xs font-bold text-white shadow-sm active:scale-[0.98] transition-all"
+                >
+                  <Share2 className="h-4 w-4" /> Bagikan Tiket ke WhatsApp Rombongan
+                </button>
+              </div>
+
               <div className="relative">
-                <span className="absolute -left-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-background" />
-                <span className="absolute -right-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-background" />
+                <span className="absolute -left-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-background border-r border-border" />
+                <span className="absolute -right-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-background border-l border-border" />
                 <div className="border-t border-dashed border-border" />
               </div>
 
@@ -154,20 +209,28 @@ function Tiket() {
                 <Fact icon={Users} label="Rombongan" value={`${t.jumlah_pendaki} pendaki`} />
                 <Fact icon={MapPin} label="Jalur" value={t.jalur_id.split("_")[0]} />
               </div>
-              <Link
-                to="/booking/$id"
-                params={{ id: t.id }}
-                className="block border-t border-border py-3 text-center text-xs font-bold text-primary"
-              >
-                Lihat detail & pembatalan
-              </Link>
+
+              <div className="border-t border-border bg-muted/20 px-4 py-2.5 flex items-center justify-between text-[11px] text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <Smartphone className="h-3.5 w-3.5 text-success" /> Tersimpan di memori HP
+                </span>
+                <Link
+                  to="/booking/$id"
+                  params={{ id: t.id }}
+                  className="font-bold text-primary hover:underline"
+                >
+                  Detail & Batalkan
+                </Link>
+              </div>
             </div>
           </div>
         ))}
 
         {aktif.length ? (
           <>
-            <h2 className="mt-2 text-xs font-bold text-muted-foreground">SYARAT & KETENTUAN</h2>
+            <h2 className="mt-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+              Syarat & Ketentuan Pendakian
+            </h2>
             <ol className="mt-2.5 space-y-2 rounded-2xl border border-border bg-card p-4 shadow-card">
               {syarat.map((s, i) => (
                 <li key={s} className="flex gap-2.5 text-[11px] leading-relaxed text-foreground/80">

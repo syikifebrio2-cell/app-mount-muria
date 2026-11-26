@@ -11,9 +11,11 @@ import {
   ShieldAlert,
   ShieldCheck,
   WifiOff,
+  Sparkles,
 } from "lucide-react";
 import { PhoneShell, ScreenHeader } from "@/components/PhoneShell";
 import { EmptyState } from "@/components/States";
+import { SummitCertificateModal } from "@/components/SummitCertificateModal";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, useProfil, useIsAdmin } from "@/hooks/useAuth";
 import { rupiah } from "@/data/muria";
@@ -55,6 +57,7 @@ function Profil() {
   const { profil } = useProfil(user?.id);
   const { isAdmin } = useIsAdmin(user?.id);
   const [riwayat, setRiwayat] = useState<RiwayatRow[]>([]);
+  const [sertifikatTerpilih, setSertifikatTerpilih] = useState<{ nama: string; jalur: string } | null>(null);
 
   useEffect(() => {
     let aktif = true;
@@ -125,8 +128,10 @@ function Profil() {
           <Stat value={rupiah(totalBiaya)} label="Total biaya" />
         </div>
 
-
-        <h2 className="mt-6 text-xs font-bold text-muted-foreground">RIWAYAT PENDAKIAN</h2>
+        {/* Riwayat Pendakian */}
+        <h2 className="mt-6 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+          Riwayat Pendakian
+        </h2>
         <ul className="mt-2.5 space-y-2">
           {riwayat.length === 0 && (
             <li>
@@ -164,27 +169,47 @@ function Profil() {
           ))}
         </ul>
 
-
-        <h2 className="mt-6 text-xs font-bold text-muted-foreground">SERTIFIKAT DIGITAL</h2>
+        {/* Sertifikat Digital (Bisa Diklik & Dibuka) */}
+        <div className="mt-6 flex items-center justify-between">
+          <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+            Sertifikat Digital
+          </h2>
+          <span className="text-[10px] font-medium text-accent flex items-center gap-1">
+            <Sparkles className="h-3 w-3" /> Ketuk untuk klaim
+          </span>
+        </div>
         <div className="no-scrollbar mt-2.5 flex gap-2.5 overflow-x-auto pb-1">
-          {["Summit Muria 2026", "Zero Waste Hiker", "Summit Muria 2025"].map((s) => (
+          {[
+            { judul: "Summit Muria 2026", jalur: "Rahtawu — Puncak 29 (1.602 mdpl)" },
+            { judul: "Zero Waste Hiker", jalur: "Kawasan Konservasi Muria" },
+            { judul: "Jalur Naga Finisher", jalur: "Rahtawu — Natas Angin (1.515 mdpl)" },
+          ].map((s) => (
             <div
-              key={s}
-              className="w-40 shrink-0 rounded-2xl border border-accent/30 bg-accent/8 p-3"
+              key={s.judul}
+              onClick={() => setSertifikatTerpilih({ nama: s.judul, jalur: s.jalur })}
+              className="w-44 shrink-0 rounded-2xl border border-accent/40 bg-accent/8 p-3 cursor-pointer hover:bg-accent/15 active:scale-95 transition-all shadow-sm"
             >
-              <Award className="h-5 w-5 text-accent" strokeWidth={1.5} />
-              <p className="mt-2 text-xs font-bold leading-snug">{s}</p>
-              <p className="mt-1 text-[10px] text-muted-foreground">Unduh PDF</p>
+              <div className="flex items-center justify-between">
+                <Award className="h-5 w-5 text-accent" strokeWidth={1.5} />
+                <span className="text-[9px] font-bold text-accent bg-accent/15 px-2 py-0.5 rounded-full">
+                  Klaim
+                </span>
+              </div>
+              <p className="mt-2 text-xs font-bold leading-snug">{s.judul}</p>
+              <p className="mt-1 text-[10px] text-muted-foreground truncate">{s.jalur}</p>
             </div>
           ))}
         </div>
 
-        <h2 className="mt-6 text-xs font-bold text-muted-foreground">NOTIFIKASI & MODE HEMAT</h2>
+        {/* Notifikasi & Pengaturan */}
+        <h2 className="mt-6 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+          Notifikasi & Mode Hemat
+        </h2>
         <div className="mt-2.5 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-          <Toggle icon={CloudLightning} label="Peringatan cuaca ekstrem" on />
-          <Toggle icon={ShieldAlert} label="Notifikasi darurat & evakuasi" on />
-          <Toggle icon={WifiOff} label="Mode offline e-tiket" on />
-          <Toggle icon={Bell} label="Promo & info kuota" />
+          <Toggle icon={CloudLightning} label="Peringatan cuaca ekstrem" defaultOn />
+          <Toggle icon={ShieldAlert} label="Notifikasi darurat & evakuasi" defaultOn />
+          <Toggle icon={WifiOff} label="Mode offline e-tiket" defaultOn />
+          <Toggle icon={Bell} label="Promo & info kuota" defaultOn={false} />
         </div>
 
         {isAdmin && (
@@ -199,7 +224,6 @@ function Profil() {
           </Link>
         )}
 
-
         <button
           onClick={keluar}
           className="mt-4 flex w-full items-center justify-between rounded-2xl border border-border bg-card px-4 py-3.5 text-sm font-semibold text-destructive shadow-card"
@@ -210,6 +234,22 @@ function Profil() {
           <ChevronRight className="h-4 w-4" strokeWidth={1.75} />
         </button>
       </div>
+
+      {/* Modal Sertifikat */}
+      {sertifikatTerpilih && (
+        <SummitCertificateModal
+          isOpen={Boolean(sertifikatTerpilih)}
+          onClose={() => setSertifikatTerpilih(null)}
+          namaPendaki={nama}
+          jalurNama={sertifikatTerpilih.jalur}
+          tanggal={new Date().toLocaleDateString("id-ID", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })}
+          kodeBooking="MTR-SUMMIT-2026"
+        />
+      )}
     </PhoneShell>
   );
 }
@@ -223,18 +263,32 @@ function Stat({ value, label }: { value: string; label: string }) {
   );
 }
 
-function Toggle({ icon: Icon, label, on }: { icon: typeof Bell; label: string; on?: boolean }) {
+function Toggle({
+  icon: Icon,
+  label,
+  defaultOn = false,
+}: {
+  icon: typeof Bell;
+  label: string;
+  defaultOn?: boolean;
+}) {
+  const [on, setOn] = useState(defaultOn);
   return (
-    <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3">
+    <div
+      onClick={() => setOn(!on)}
+      className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 cursor-pointer select-none"
+    >
       <Icon className="h-4 w-4 shrink-0 text-primary" strokeWidth={1.75} />
       <span className="min-w-0 truncate text-xs font-semibold">{label}</span>
       <span
-        className={`flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 ${
+        className={`flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 transition-colors ${
           on ? "bg-primary" : "bg-border"
         }`}
       >
         <span
-          className={`h-4 w-4 rounded-full bg-card transition-transform ${on ? "translate-x-4" : ""}`}
+          className={`h-4 w-4 rounded-full bg-card transition-transform shadow-sm ${
+            on ? "translate-x-4" : ""
+          }`}
         />
       </span>
     </div>
